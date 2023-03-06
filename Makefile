@@ -1,44 +1,98 @@
-# TODO: Create makefile that run all builds %.o and %.s on dir ./build
-# FOR MAKEFILE PREPROCESSING: CHECK ONNX_INCLUDE by cONNXr
-
+# CC and FLAGS
 CC			:= gcc
-CFLAGS		:= -g -ggdb -Wall -O3
+AR			:= ar
+CFLAGS		:= -std=c99 -g3 -ggdb -Wall -O3
+LDFLAGS		:= -g
 
 
-SRCDIRS		+= $(dir $(wildcard ./src/*/))
+APP			?= scratch
+APPDIRS 	:= $(dir $(wildcard ./$(APP)/*/))
+APPFILES	:= $(foreach dir, $(APPDIRS), $(wildcard $(dir)*.c))
+APPOBJS		:= $(foreach file, $(APPFILES:.c=.o), $(subst ./, ./build/, $(file)))
+
+SRCDIRS		+= ./src/ ./src/proto/
+SRCDIRS		:= $(filter-out ./src/operators/, $(SRCDIRS))
 BUILDDIR	+= ./build
-INCDIRS		+= -I ./src
-LIBDIRS		:= -L ./src
+INCDIRS		+= -I ./src/
+
+LIBNAME		:= libuonnx.a
+LIBPATH		:= $(BUILDDIR)/lib/$(LIBNAME)
+LIBFLAGS	:= -L $(BUILDDIR)/lib/
 LIBS		:= -lm
 
-CFILES		:= $(foreach dir, $(SRCDIRS), $(wildcard $(dir)*.c))
+CFILES 		:= $(foreach dir, $(SRCDIRS), $(wildcard $(dir)*.c))
+SRCS		:= $(foreach dir, $(SRCDIRS), $(wildcard $(dir)*.c))
 
-COBJS		:= $(foreach file, $(CFILES:.c=.o), $(subst ./, ./build/, $(file)))
-OBJS		:= $(COBJS)
+COBJS		:= $(foreach file, $(SRCS:.c=.o), $(subst ./, ./build/, $(file)))
+OBJS		:= $(COBJS) $(APPOBJS)
 
-SCRATCHFILE	:= ./src/scratch.c
 
-# Compile and create all object files to directory ./build
-$(BUILDDIR)/%.o:%.c
+.PHONY: all lib run run_with_lib clean test make_test test_scratch
+
+all: clean lib
+
+# TODO: ifneq def for Makefile for ops stripping
+
+# Compile C files into C objects 
+
+$(APPOBJS): $(BUILDDIR)/%.o:%.c
 	@mkdir -p $(dir $@)
-	@echo [CC] $^
-	@$(CC) -o $@ -c $(CFLAGS) $^
+	@echo [CC] APP: $^
+	@$(CC) -o $@ -c $(CFLAGS) $(INCDIRS) $^
 
-.PHONY: test scratch clean
+$(COBJS): $(BUILDDIR)/%.o:%.c
+	@mkdir -p $(dir $@)
+	@echo [CC] SRC: $^
+	@$(CC) -o $@ -c $(CFLAGS) $(INCDIRS) $^
 
-#
-scratch: $(BUILDDIR)/scratch clean
-$(BUILDDIR)/scratch: $(OBJS)
-	@echo [LD] Linking $@
-	@$(CC) $(LIBDIRS) $^ -o $@ $(LIBS) -static
-	@echo [RR] Running $@
+
+# Rule for library
+lib: $(LIBPATH)
+$(LIBPATH):$(COBJS)
+	@mkdir -p $(dir $@)
+	@echo [AR] Archiving $(LIBNAME)
+	@$(AR) -rcs $@ $(COBJS)
+	@echo [MK] Library path is $(LIBPATH)
+
+# Rule for making apps
+run: $(COBJS) $(APPOBJS)
+	@echo [LD] Linking $(APP)
+	@$(CC) -o $(BUILDDIR)/$(APP).out $(OBJS) $(CFLAGS) $(INCDIRS) $(LIBS) 
 	@echo
-	@./$@
+	@echo [MK] App executable found at $(BUILDDIR)/$(APP).out
 	@echo
 
+# Rule for linking app with lib
+run_with_lib: lib $(APPOBJS)
+	@echo [LD] Linking $(APP)
+	@$(CC) -static -o $(BUILDDIR)/$(APP).out $(LIBFLAGS) $(APPOBJS) $(LIBS) -luonnx
+	@echo
+	@echo [MK] App executable found at $(BUILDDIR)/$(APP).out
+	@echo
+
+# Rule for cleaning ./build
 clean:
 	@rm -rf $(BUILDDIR)
 
-test: scratch clean
+# Run scratch example. Use this for future example.
+test_scratch: clean run 
+	@echo -n Running $(APP).
+	@sleep 0.66
+	@echo -n .
+	@sleep 0.66
+	@echo -n .
+	@sleep 0.66
+	@echo
+	@$(BUILDDIR)/$(APP).out
+
+# Used for debugging
+make_test:
+	@echo BUILDDIR: $(BUILDDIR)
+	@echo SRCDIRS: $(SRCDIRS)
+	@echo SRCS: $(SRCS)
+	@echo COBJS: $(COBJS)
+	@echo APP: $(APPDIRS)
+	@echo APPFILES: $(APPFILES)
+	@echo APPOBJS: $(APPOBJS)
 	
 
