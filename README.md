@@ -11,3 +11,7 @@ Memory-efficient ONNX inference engine for tinyML
 * `make clean`: remove ./build
 * `make test_scratch`: compile src and run scratch app. 
 * `make make_test`: just some debugger for makefile.
+
+
+onnx_loader.h
+onnx_allocator.h

@@ -26,21 +26,23 @@ Teststruct * init_teststruct(Teststruct * s)
 
 void print_teststruct(Teststruct * s)
 {
-    printf("mchar: %s\n", s->mchar);
-    printf("num_in_mchar: %d\n", s->num_in_mchar);
+    ONNX_LOG("mchar: %s\n", s->mchar);
+    ONNX_LOG("num_in_mchar: %d\n", s->num_in_mchar);
     for(int i=0; i<10; i++)
     {
-        printf("test_arr %d: %d\n", i, s->arr[i]->data);
+        ONNX_LOG("test_arr %d: %d\n", i, s->arr[i]->data);
     }
+
+    free(s);
 }
 
 void testprint()
 {
-    printf("Hello uONNX\n");
+    ONNX_LOG("Hello uONNX\n");
 }
 
 int testsum(int a, int b)
 {
-    printf("Sum: %d\n", a+b);
+    ONNX_LOG("Sum: %d\n", a+b);
     return a+b;
 }

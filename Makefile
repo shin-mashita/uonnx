@@ -1,12 +1,13 @@
 # CC and FLAGS
 CC			:= gcc
 AR			:= ar
-CFLAGS		:= -std=c99 -g3 -ggdb -Wall -O3
+# CFLAGS		:= -std=c99 -g3 -ggdb -Wall -O3
+CFLAGS		:= -g3 -ggdb -Wall -O3
 LDFLAGS		:= -g
 
 
 APP			?= scratch
-APPDIRS 	:= $(dir $(wildcard ./$(APP)/*/))
+APPDIRS 	:= $(sort $(dir $(wildcard ./$(APP)/*/)))
 APPFILES	:= $(foreach dir, $(APPDIRS), $(wildcard $(dir)*.c))
 APPOBJS		:= $(foreach file, $(APPFILES:.c=.o), $(subst ./, ./build/, $(file)))
 
