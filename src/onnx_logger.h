@@ -1,10 +1,10 @@
 #ifndef __ONNX_LOGGER_H__
 #define __ONNX_LOGGER_H__
 
-#define ONNX_LOG(...) (printf("[uONNX] "), printf(__VA_ARGS__))
+#define ONNX_LOGT(...) (printf("[uONNX] "), printf(__VA_ARGS__))
+#define ONNX_LOG(...) (printf(__VA_ARGS__))
 
 #include "onnx_config.h"
-#include "proto/onnx.proto3.pb-c.h"
 #include "onnx_dtypes.h"
 
 void onnx_model_dump(Onnx__ModelProto * model);

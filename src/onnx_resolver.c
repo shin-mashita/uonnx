@@ -1,6 +1,6 @@
 #include "onnx_resolver.h"
 
-static void resolver_solve_operator(struct onnx_resolver_t * r, struct onnx_node_t * n)
+void resolver_solve_operator(struct onnx_resolver_t * r, struct onnx_node_t * n)
 {
 	void (*rop)(struct onnx_node_t *);
 

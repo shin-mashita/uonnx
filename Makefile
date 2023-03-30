@@ -11,7 +11,7 @@ APPDIRS 	:= $(sort $(dir $(wildcard ./$(APP)/*/)))
 APPFILES	:= $(foreach dir, $(APPDIRS), $(wildcard $(dir)*.c))
 APPOBJS		:= $(foreach file, $(APPFILES:.c=.o), $(subst ./, ./build/, $(file)))
 
-SRCDIRS		+= ./src/ ./src/proto/
+SRCDIRS		+= ./src/ ./src/proto/ ./src/ops/
 SRCDIRS		:= $(filter-out ./src/operators/, $(SRCDIRS))
 BUILDDIR	+= ./build
 INCDIRS		+= -I ./src/
@@ -66,7 +66,7 @@ run: $(COBJS) $(APPOBJS)
 # Rule for linking app with lib
 run_with_lib: lib $(APPOBJS)
 	@echo [LD] Linking $(APP)
-	@$(CC) -static -o $(BUILDDIR)/$(APP).out $(LIBFLAGS) $(APPOBJS) $(LIBS) -luonnx
+	@$(CC) -static -o $(BUILDDIR)/$(APP).out $(LIBFLAGS) $(APPOBJS) -luonnx $(LIBS)
 	@echo
 	@echo [MK] App executable found at $(BUILDDIR)/$(APP).out
 	@echo
@@ -76,7 +76,7 @@ clean:
 	@rm -rf $(BUILDDIR)
 
 # Run scratch example. Use this for future example.
-test_scratch: clean run 
+test_scratch: clean run
 	@echo -n Running $(APP).
 	@sleep 0.66
 	@echo -n .

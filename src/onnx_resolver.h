@@ -177,7 +177,7 @@ struct onnx_resolver_t {
 	void (*op_SoftmaxCrossEntropyLoss)(struct onnx_node_t * n);
 };
 
-static void resolver_solve_operator(struct onnx_resolver_t * r, struct onnx_node_t * n);
+void resolver_solve_operator(struct onnx_resolver_t * r, struct onnx_node_t * n);
 
 void * resolver_default_create(void);
 void resolver_default_destroy(void * rctx);
