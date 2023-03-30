@@ -3,6 +3,7 @@
 
 #include "onnx_config.h"
 #include "proto/onnx.proto3.pb-c.h"
+#include "onnx_dtypes.h"
 
 /* Mapping of tensor type */
 const char * onnx_tensor_type_tostring(enum onnx_tensor_type_t type);

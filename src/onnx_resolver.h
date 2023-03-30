@@ -2,6 +2,7 @@
 #define __ONNX_RESOLVER_H__
 
 #include "onnx_config.h"
+#include "onnx_dtypes.h"
 
 struct onnx_resolver_t {
 	const char * name;
@@ -175,5 +176,32 @@ struct onnx_resolver_t {
 	void (*op_Softmax)(struct onnx_node_t * n);
 	void (*op_SoftmaxCrossEntropyLoss)(struct onnx_node_t * n);
 };
+
+static void resolver_solve_operator(struct onnx_resolver_t * r, struct onnx_node_t * n);
+
+void * resolver_default_create(void);
+void resolver_default_destroy(void * rctx);
+
+void resolver_default_op_Add(struct onnx_node_t * n);
+void resolver_default_op_ArgMax(struct onnx_node_t * n);
+void resolver_default_op_BatchNormalization(struct onnx_node_t * n);
+void resolver_default_op_Clip(struct onnx_node_t * n);
+void resolver_default_op_Constant(struct onnx_node_t * n);
+void resolver_default_op_Conv(struct onnx_node_t * n);
+void resolver_default_op_ConvTranspose(struct onnx_node_t * n);
+void resolver_default_op_Elu(struct onnx_node_t * n);
+void resolver_default_op_GlobalAveragePool(struct onnx_node_t * n);
+void resolver_default_op_Identity(struct onnx_node_t * n);
+void resolver_default_op_LeakyRelu(struct onnx_node_t * n);
+void resolver_default_op_MatMul(struct onnx_node_t * n);
+void resolver_default_op_MaxPool(struct onnx_node_t * n);
+void resolver_default_op_Mul(struct onnx_node_t * n);
+void resolver_default_op_Relu(struct onnx_node_t * n);
+void resolver_default_op_Reshape(struct onnx_node_t * n);
+void resolver_default_op_Sigmoid(struct onnx_node_t * n);
+void resolver_default_op_Softmax(struct onnx_node_t * n);
+void resolver_default_op_Transpose(struct onnx_node_t * n);
+
+extern struct onnx_resolver_t resolver_default;
 
 #endif

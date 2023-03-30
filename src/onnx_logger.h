@@ -5,6 +5,7 @@
 
 #include "onnx_config.h"
 #include "proto/onnx.proto3.pb-c.h"
+#include "onnx_dtypes.h"
 
 void onnx_model_dump(Onnx__ModelProto * model);
 

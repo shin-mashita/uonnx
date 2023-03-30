@@ -13,8 +13,8 @@ extern "C" {
 #include <malloc.h>
 #include <float.h>
 #include <math.h>
-#include <list.h>
-#include <hmap.h>
+#include "list.h"
+#include "hmap.h"
 
 /*
  * Macro
@@ -153,4 +153,4 @@ static inline uint32_t shash(const char * s)
 }
 #endif
 
-#endif /* __ONNXCONF_H__ */
+#endif
