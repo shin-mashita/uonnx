@@ -11,8 +11,9 @@ APPDIRS 	:= $(sort $(dir $(wildcard ./$(APP)/*/)))
 APPFILES	:= $(foreach dir, $(APPDIRS), $(wildcard $(dir)*.c))
 APPOBJS		:= $(foreach file, $(APPFILES:.c=.o), $(subst ./, ./build/, $(file)))
 
-SRCDIRS		+= ./src/ ./src/proto/ ./src/ops/
-SRCDIRS		:= $(filter-out ./src/operators/, $(SRCDIRS))
+SRCDIRS		+= ./src/ ./src/proto/ 
+OPSDIRS		:= ./src/ops/
+
 BUILDDIR	+= ./build
 INCDIRS		+= -I ./src/
 
@@ -21,8 +22,10 @@ LIBPATH		:= $(BUILDDIR)/lib/$(LIBNAME)
 LIBFLAGS	:= -L $(BUILDDIR)/lib/
 LIBS		:= -lm
 
-CFILES 		:= $(foreach dir, $(SRCDIRS), $(wildcard $(dir)*.c))
+OPS			?= $(foreach dir, $(OPSDIRS), $(wildcard $(dir)*.c))
+
 SRCS		:= $(foreach dir, $(SRCDIRS), $(wildcard $(dir)*.c))
+SRCS		+= $(OPS)
 
 COBJS		:= $(foreach file, $(SRCS:.c=.o), $(subst ./, ./build/, $(file)))
 OBJS		:= $(COBJS) $(APPOBJS)
@@ -90,8 +93,13 @@ test_scratch: clean run
 make_test:
 	@echo BUILDDIR: $(BUILDDIR)
 	@echo SRCDIRS: $(SRCDIRS)
+	@echo OPSDIRS: $(OPSDIRS)
+
+	@echo OPS: $(OPS)
+	@echo SRCS: $(SRCS)
 	@echo SRCS: $(SRCS)
 	@echo COBJS: $(COBJS)
+
 	@echo APP: $(APPDIRS)
 	@echo APPFILES: $(APPFILES)
 	@echo APPOBJS: $(APPOBJS)
