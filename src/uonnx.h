@@ -8,6 +8,12 @@
 #include "onnx_resolver.h"
 #include "onnx_utils.h"
 
+// Default resolvers here. Comment out to use custom resolvers.
+#include "onnx_default_resolver.h"
+
+// Custom resolver here. Uncomment to use. 
+// #include "onnx_custom_resolver.h"
+
 void onnx_run(struct onnx_context_t * ctx);
 
 #endif

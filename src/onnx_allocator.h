@@ -3,6 +3,7 @@
 
 #include "onnx_config.h"
 #include "onnx_resolver.h"
+#include "onnx_default_resolver.h"
 #include "onnx_logger.h"
 #include "proto/onnx.proto3.pb-c.h"
 #include "onnx_dtypes.h"

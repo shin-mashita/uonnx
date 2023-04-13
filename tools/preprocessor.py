@@ -44,8 +44,6 @@ def get_ops_dtype(model_file):
             L.append((node_dict[name]["op"] + "," , "NO_OP"))
     return list(set(L))
 
-# Fix resolver
-
 def get_opset(model):
 
     # Get the model's graph
@@ -71,6 +69,123 @@ def get_opset(model):
 
     return operators_nodupe
 
+def generate_resolver(ops):
+    hbody1 = \
+"""
+#ifndef __ONNX_CUSTOM_RESOLVER_H__
+#define __ONNX_CUSTOM_RESOLVER_H__
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+#include "onnx_config.h"
+#include "onnx_dtypes.h"
+
+void * resolver_custom_create(void);
+void resolver_custom_destroy(void * rctx);
+
+"""
+    hbody2 = '\n'.join([f"void resolver_default_op_{op}(struct onnx_node_t * n);" for op in ops])
+
+    hbody3 = \
+"""
+
+extern struct onnx_resolver_t resolver_custom;
+
+#ifdef __cplusplus
+}
+#endif
+
+#endif
+"""
+    cbody1 = \
+"""
+#include "onnx_custom_resolver.h"
+
+// Generated resolver
+void * resolver_custom_create(void)
+{
+	return NULL;
+}
+
+void resolver_custom_destroy(void * rctx)
+{
+}
+
+struct onnx_resolver_t resolver_custom = {
+	.name 							= "custom",
+
+	.create							= resolver_custom_create,
+	.destroy						= resolver_custom_destroy,
+
+        """
+    
+    cbody2 = '\n\t'.join([f".op_{op} = resolver_default_op_{op}," for op in ops])
+
+    cbody3 = "\n};"
+
+    return hbody1 + hbody2 + hbody3, cbody1 + cbody2 + cbody3
+
+def generate_resolver_h(ops):
+    hbody1 = """
+#ifndef __ONNX_RESOLVER_H__
+#define __ONNX_RESOLVER_H__
+
+#ifdef __cplusplus
+extern \"C\" {
+#endif
+
+#include "onnx_config.h"
+#include "onnx_dtypes.h"
+
+struct onnx_resolver_t {
+	const char * name;
+
+	void * (*create)(void);
+	void (*destroy)(void * rctx);
+
+    """
+
+    hbody2 = '\n\t'.join([f"void (*op_{op})(struct onnx_node_t * n);" for op in ops])
+
+    hbody3 = """
+    };
+
+void resolver_solve_operator(struct onnx_resolver_t * r, struct onnx_node_t * n);
+
+void * resolver_default_create(void);
+void resolver_default_destroy(void * rctx);
+
+    """
+    hbody4 = '\n'.join([f"void resolver_default_op_{op}(struct onnx_node_t * n);" for op in ops])
+
+    hbody5 = """
+
+extern struct onnx_resolver_t resolver_default;
+
+#ifdef __cplusplus
+}
+#endif
+#endif"""
+
+    return hbody1 + hbody2 + hbody3 + hbody4 + hbody5
+
+def add_resolver_h(ops):
+    cwd = os.getcwd()
+    if cwd[-5:] == 'uonnx':
+        os.rename('./src/onnx_resolver.h','./src/onnx_resolver.h.bak')
+        with open('./src/onnx_resolver.h', 'w') as f:
+            f.write(generate_resolver_h(ops))
+
+def restore_resolver_h():
+    cwd = os.getcwd()
+    if cwd[-5:] == 'uonnx':
+        if (os.path.exists('./src/onnx_resolver.h') and os.path.exists('./src/onnx_resolver.h.bak')):
+            os.remove('./src/onnx_resolver.h')
+            os.rename('./src/onnx_resolver.h.bak', './src/onnx_resolver.h')
+        
+
 def get_args():
     parser = ArgumentParser(description="uONNX Preprocessor")
     parser.add_argument('--model', type=str, default='./scratch/model.onnx', help="ONNX model path")
@@ -84,25 +199,34 @@ def main(args=None):
         model_file = args.model
         model = onnx.load(model_file)
 
+        ops = get_ops(model)
+
         ops_dir = './src/ops/'
         ops_ext = '.c'
 
-        ops = [ops_dir + op + ops_ext for op in get_ops(model)]
+        ops_paths = [ops_dir + op + ops_ext for op in ops]
         opstr = ""
 
-        # Check if ops_path exists
-        for op in ops:
+        # Check if ops_paths exists
+        for op in ops_paths:
             if not os.path.exists(op):
-                print(op + " does not exit.")
+                print(op + " does not exist.")
                 return
             else:
                 opstr = opstr + op + " "
 
         opstr = '\'' + opstr + '\''
-
+        
         cwd = os.getcwd()
         if cwd[-5:] == 'uonnx':
-            os.system('make run_with_lib OPS={0}'.format(opstr))
+            # add_resolver_h(ops)
+            # os.system('make make_test OPS={0}'.format(opstr))
+            # os.system('cat ./src/onnx_resolver.h')
+            # restore_resolver_h()
+            h,c = generate_resolver(ops)
+            print(h)
+            print(c)
+            # os.system('make run_with_lib OPS={0}'.format(opstr))
 
 
 if __name__ == "__main__":

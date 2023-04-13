@@ -51,6 +51,7 @@ int main()
     struct onnx_tensor_t * img = onnx_tensor_alloc_from_file("./scratch/input_0.pb");
 
     ctx = onnx_context_alloc_from_file("./scratch/model.onnx", NULL, 0);
+	float * test = malloc(sizeof(float));
 
     if(ctx)
     {
@@ -68,6 +69,7 @@ int main()
 
         onnx_context_free(ctx);
     }
+
     
 
     return 0;

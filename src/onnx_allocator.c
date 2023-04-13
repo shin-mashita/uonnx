@@ -526,12 +526,17 @@ struct onnx_graph_t * onnx_graph_alloc(struct onnx_context_t * ctx, Onnx__GraphP
 	if(!graph)
 		return NULL;
 
+	// Initialize graph. Set to zero all values. 
 	g = malloc(sizeof(struct onnx_graph_t));
 	if(!g)
 		return NULL;
 	memset(g, 0, sizeof(struct onnx_graph_t));
 
+	// Assign nlen. 
 	g->nlen = graph->n_node;
+
+	// Alloc g->nodes by size of nlen*sizeof(node).
+	// MODIFY: alloc instead by max_size accdng to planner. MAX_SIZE can be passed as parameter.
 	g->nodes = malloc(sizeof(struct onnx_node_t) * g->nlen);
 	if(!g->nodes)
 	{
@@ -539,6 +544,8 @@ struct onnx_graph_t * onnx_graph_alloc(struct onnx_context_t * ctx, Onnx__GraphP
 		return NULL;
 	}
 
+	// Update map for inputs. 
+	// SUGGESTION: remove map?
 	for(i = 0; i < graph->n_input; i++)
 	{
 		v = graph->input[i];
@@ -560,6 +567,7 @@ struct onnx_graph_t * onnx_graph_alloc(struct onnx_context_t * ctx, Onnx__GraphP
 		}
 	}
 
+	// Update map for outputs.
 	for(i = 0; i < graph->n_output; i++)
 	{
 		v = graph->output[i];
@@ -571,6 +579,7 @@ struct onnx_graph_t * onnx_graph_alloc(struct onnx_context_t * ctx, Onnx__GraphP
 		}
 	}
 
+	// Update map for value_info.
 	for(i = 0; i < graph->n_value_info; i++)
 	{
 		v = graph->value_info[i];
@@ -582,6 +591,7 @@ struct onnx_graph_t * onnx_graph_alloc(struct onnx_context_t * ctx, Onnx__GraphP
 		}
 	}
 
+	// Update map for output of each nodes.
 	for(i = 0; i < graph->n_node; i++)
 	{
 		for(j = 0; j < graph->node[i]->n_output; j++)
@@ -596,6 +606,7 @@ struct onnx_graph_t * onnx_graph_alloc(struct onnx_context_t * ctx, Onnx__GraphP
 		}
 	}
 
+	// Update map for input of each nodes. Add each input tensors to map. 
 	for(i = 0; i < graph->n_node; i++)
 	{
 		for(j = 0; j < graph->node[i]->n_input; j++)
@@ -635,6 +646,7 @@ struct onnx_graph_t * onnx_graph_alloc(struct onnx_context_t * ctx, Onnx__GraphP
 		}
 	}
 
+	// To update here... 
 	for(i = 0; i < g->nlen; i++)
 	{
 		n = &g->nodes[i];
