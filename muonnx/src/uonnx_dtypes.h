@@ -36,7 +36,7 @@ typedef struct Tensor
     size_t ndata;
     int64_t * dims;
     size_t ndim;
-	uint8_t inArena; // May remove later
+	uint8_t isProto; // May remove later
 } Tensor;
 
 typedef struct Node

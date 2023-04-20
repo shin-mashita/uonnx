@@ -1,7 +1,7 @@
 #include <uonnx.h>
 
 
-TensorArena * arena_init(const int MAX_TENSORS, const int MAX_BYTES)
+TensorArena * arena_init(const int MAX_TENSORS, const int MAX_BLOCKS)
 {
     int i;
     TensorArena * arena = malloc(sizeof(arena));
@@ -10,8 +10,8 @@ TensorArena * arena_init(const int MAX_TENSORS, const int MAX_BYTES)
     {
         arena->n_tensors = MAX_TENSORS;
         arena->tensors = malloc(sizeof(Tensor *)*MAX_TENSORS);
-        arena->datas = malloc(sizeof(void *)*MAX_BYTES);
-        memset(arena->datas, 0, sizeof(void *)*MAX_BYTES);
+        arena->datas = malloc(sizeof(void *)*MAX_BLOCKS);
+        memset(arena->datas, 0, sizeof(void *)*MAX_BLOCKS);
         
         for(i=0; i<arena->n_tensors; i++)
         {
@@ -23,6 +23,44 @@ TensorArena * arena_init(const int MAX_TENSORS, const int MAX_BYTES)
     }
 
     return NULL;
+}
+
+void free_arena(TensorArena * arena)
+{
+    int i;
+
+    if(arena)
+    {
+        if(arena->datas) // BUG: CAUSING DOUBLE FREE!!!
+        {
+            free(arena->datas);
+        }
+
+        for(i=0; i<arena->n_tensors; i++)
+        {
+            free_tensor(arena->tensors[i]);
+        }
+
+        if(arena->tensors)
+            free(arena->tensors);
+        
+
+
+        free(arena);
+    }
+}
+
+void free_tensor(Tensor * t)
+{
+    if(t)
+    {
+        if(t->name)
+        {
+            free(t->name);
+            if(!t->isProto)free(t->dims);
+        }
+        free(t);
+    }
 }
 
 Tensor * tensor_init(   const char * name, 
@@ -50,6 +88,9 @@ Tensor * tensor_init(   const char * name,
     t->name = strdup(name); // Free later
     t->type = type;
 
+    //WORKAROUND FOR DOUBLE FREE
+    t->isProto = 0;
+
     t->dims = malloc(sizeof(int64_t)*ndim); //Free later
     memcpy(t->dims, dims, sizeof(int64_t)*ndim);
 
@@ -66,11 +107,6 @@ Tensor * tensor_init(   const char * name,
     }
 
     t->datas = &arena->datas[data_idx];
-
-    if(t->datas)
-    {
-        memset(t->datas, 0, sizeof(void *)*ndata);
-    }
 
     return t;
 
@@ -116,7 +152,13 @@ Tensor * tensor_init_from_proto(TensorProto * tp, Tensor * tensor)
     {
         t->name = tp->name;
         t->type = tp->data_type;
+
+        // WORKAROUND FOR DOUBLE FREE
         t->dims = tp->dims;
+        t->isProto = 1;
+        // t->dims = malloc(sizeof(int64_t)*tp->n_dims); //
+        // memcpy(t->dims, tp->dims, sizeof(int64_t)*tp->n_dims); // 
+        
         t->ndim = tp->n_dims;
 
         for(i < 0; i < t->ndim; i++)
@@ -155,6 +197,8 @@ Tensor * tensor_init_from_proto(TensorProto * tp, Tensor * tensor)
 
 int main()
 {
+    int i; 
+
     ModelProto * model = NULL;
     GraphProto * graph = NULL;
 
@@ -174,10 +218,21 @@ int main()
     {   
         p[i] = 0.6969 + i;
     }
+    
+    Tensor * t0 = tensor_init_from_proto(tp0, arena->tensors[0]);
+    Tensor * t1 = tensor_init_from_proto(tp2, arena->tensors[2]);
+    Tensor * t2 = tensor_init(tp2->name, tp2->data_type, tp2->dims, tp2->n_dims, arena, 3, 0*sizeof(float));
+    // TODO: iteration is by bytes (data_idx = 1 -> 1 byte offset)
+    // TODO: 
 
-    Tensor * t0 = tensor_init_from_proto(tp0, arena->tensors[1]);
-    Tensor * t1 = tensor_init_from_proto(tp1, arena->tensors[2]);
-    Tensor * t2 = tensor_init(tp2->name, tp2->data_type, tp2->dims, tp2->n_dims, arena, 3, 0);
+    Tensor * t3 = tensor_init(tp2->name, tp2->data_type, tp2->dims, tp2->n_dims, arena, 4, 10*sizeof(float));
+
+
+    tensor_apply(tp2->float_data, tp2->n_float_data, t3);
+    tensor_apply(testdata, 5, t2);
+
+    dump_tensor(t1);
+    dump_tensor(t3);
     
     for(int i = 0; i<10; i++)
     {
@@ -186,15 +241,32 @@ int main()
             printf("%d is null\n",i);
         }
     }
+    
+    printf("\n\n\n");
 
-    dump_tensor(t0);
-    dump_tensor(t1);
-    dump_tensor(t2);
+    // uint16_t * buffer = malloc(sizeof(uint8_t)*20);
+    // for(int i = 0; i< 20 ; i++)
+    // {
+    //     buffer[i] = i+2;
+    // }
 
-    tensor_apply(p, 5, t1);
-    dump_tensor(t1);
+    // free(buffer);
+
+    // for(int i = 0; i < 20; i++)
+    // {
+    //     printf("%d ", buffer[i]);
+    // }
 
     free_model(model);
+    free_arena(arena);
+
+
+    float * v = (float *) arena->datas;
+    for(int i=0; i<100; i++)
+    {
+        printf("%.2f ", v[i]);
+    }
+
     
     return 0;
 }
