@@ -25,11 +25,6 @@ TensorArena * arena_init(const int MAX_TENSORS, const int MAX_BYTES)
     return NULL;
 }
 
-// Tensor * tensor_malloc()
-// {
-
-// }
-
 Tensor * tensor_init(   const char * name, 
                         TensorType type, 
                         int64_t * dims, 
@@ -79,6 +74,24 @@ Tensor * tensor_init(   const char * name,
 
     return t;
 
+}
+
+void tensor_apply(void * datas, size_t ndata, Tensor * t)
+{
+    if(t->name != NULL && t)
+    {
+        switch(t->type)
+        {
+            case TENSOR_TYPE_FLOAT32:
+                memcpy(t->datas, datas, sizeof(float)*ndata);
+                break;
+                
+            case TENSOR_TYPE_INT64:
+                memcpy(t->datas, datas, sizeof(int64_t)*ndata);
+                break;
+        }
+        
+    }
 }
 
 
@@ -151,6 +164,7 @@ int main()
 
     TensorProto * tp0 = model->graph->initializer[0];
     TensorProto * tp1 = model->graph->initializer[1];
+    TensorProto * tp2 = model->graph->initializer[2];
 
     TensorArena * arena = arena_init(10, 10000);
 
@@ -162,11 +176,8 @@ int main()
     }
 
     Tensor * t0 = tensor_init_from_proto(tp0, arena->tensors[1]);
-    Tensor * t1 = tensor_init_from_proto(tp1, arena->tensors[5]);
-    
-    
-    Tensor * t2 = tensor_init(tp0->name, tp0->data_type, tp0->dims, tp0->n_dims, arena, 1, 0);
-
+    Tensor * t1 = tensor_init_from_proto(tp1, arena->tensors[2]);
+    Tensor * t2 = tensor_init(tp2->name, tp2->data_type, tp2->dims, tp2->n_dims, arena, 3, 0);
     
     for(int i = 0; i<10; i++)
     {
@@ -178,8 +189,10 @@ int main()
 
     dump_tensor(t0);
     dump_tensor(t1);
-
     dump_tensor(t2);
+
+    tensor_apply(p, 5, t1);
+    dump_tensor(t1);
 
     free_model(model);
     
