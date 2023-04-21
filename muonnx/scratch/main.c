@@ -1,5 +1,12 @@
 #include <uonnx.h>
 
+Graph * graph_init(GraphProto gproto)
+{
+    Graph * g;
+
+    g = malloc(sizeof(Graph));
+    
+}
 
 TensorArena * arena_init(const int MAX_TENSORS, const int MAX_BLOCKS)
 {
@@ -84,6 +91,11 @@ Tensor * tensor_init(   const char * name,
         t = malloc(sizeof(Tensor)); //TODO: Find way to free if arena == NULL
     }
     
+
+    // TODO: Add conditionals for NULL statements
+    t->name = NULL;
+    t->dims = NULL;
+    t->ndim = NULL;
 
     t->name = strdup(name); // Free later
     t->type = type;

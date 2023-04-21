@@ -42,6 +42,11 @@ typedef struct Tensor
 typedef struct Node
 {
     int opset;
+	Tensor ** inputs;
+	int ninputs;
+	Tensor ** outputs;
+	int noutputs;
+
 } Node;
 
 typedef struct Graph
