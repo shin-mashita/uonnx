@@ -6,6 +6,7 @@
 typedef Onnx__ModelProto ModelProto;
 typedef Onnx__GraphProto GraphProto; 
 typedef Onnx__TensorProto TensorProto;
+typedef Onnx__ValueInfoProto ValueInfoProto;
 
 typedef enum TensorType
 {
@@ -34,9 +35,9 @@ typedef struct Tensor
     TensorType type;
     void * datas;
     size_t ndata;
-    int64_t * dims;
+    int * dims;
     size_t ndim;
-	uint8_t isProto; // May remove later
+	uint8_t isInitializer; // May remove later
 } Tensor;
 
 typedef struct Node
@@ -57,9 +58,12 @@ typedef struct Graph
 
 typedef struct TensorArena //TODO: Define in separate C module
 {
+	// Tensor ** ptensors;
+	// int n_ptensors;
 	Tensor ** tensors;
 	int n_tensors;
 	void * datas;
+	size_t * n_bytes;
 } TensorArena;
 
 typedef struct Resolver //TODO: Define in another C module
@@ -74,6 +78,19 @@ typedef struct Context
     Graph * graph;
 } Context;
 
+typedef struct Plan
+{
+	char * tensor_name;
+	size_t index;
+} Plan;
+
+typedef struct Planner
+{
+	Plan ** plans;
+	int n_plans; // Total tensors - initializers
+	size_t max_arena_size;
+	int max_arena_n_tensors;
+} Planner;
 
 
 

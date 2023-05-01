@@ -544,7 +544,7 @@ struct onnx_graph_t * onnx_graph_alloc(struct onnx_context_t * ctx, Onnx__GraphP
 		return NULL;
 	}
 
-	// Update map for inputs. 
+	// Update map for value info inputs. 
 	// SUGGESTION: remove map?
 	for(i = 0; i < graph->n_input; i++)
 	{
@@ -567,7 +567,7 @@ struct onnx_graph_t * onnx_graph_alloc(struct onnx_context_t * ctx, Onnx__GraphP
 		}
 	}
 
-	// Update map for outputs.
+	// Update map for value info outputs.
 	for(i = 0; i < graph->n_output; i++)
 	{
 		v = graph->output[i];

@@ -60,6 +60,8 @@ int main()
         input = onnx_tensor_search(ctx, "Input3");
 		output = onnx_tensor_search(ctx, "Plus214_Output_0");
 
+		printf("%d %d\n\n", output->dims[0], output->dims[1]);
+
 		// onnx_tensor_apply(input, (void *)input_3, sizeof(input_3));
 		onnx_tensor_apply(input, img->datas, img->ndata * onnx_tensor_type_sizeof(img->type));
         onnx_tensor_dump(input, 1);
