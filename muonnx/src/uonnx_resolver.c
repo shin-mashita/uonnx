@@ -1,12 +1,12 @@
 #include "uonnx_resolver.h"
 
-void resolver_solve_operator(Resolver * r, Node * n)
+void resolver_solve_operator(Resolver * r, Node * n, char * op_type)
 {
     void (*rop)(Node *);
 
     if(r && n)
     {
-        switch(shash(n->proto->op_type))
+        switch(shash(op_type)) // Changed from n->proto->op_type
         {
             #ifdef UONNX_OP_TEST
             case 0x39d6d0e3: /* Test_Op*/
@@ -510,6 +510,8 @@ void resolver_solve_operator(Resolver * r, Node * n)
     }
 }
 
+
+
 void * resolver_default_create(void)
 {
 	return NULL;
@@ -529,7 +531,7 @@ Resolver resolver_default =
     // .op_Abs							= resolver_default_op_Abs,
     // .op_Acos						= resolver_default_op_Acos,
     // .op_Acosh						= resolver_default_op_Acosh,
-    // .op_Add							= resolver_default_op_Add, //
+    .op_Add							= resolver_default_op_Add, //
     // .op_And							= resolver_default_op_And,
     // .op_ArgMax						= resolver_default_op_ArgMax,
     // .op_ArgMin						= resolver_default_op_ArgMin,
@@ -548,7 +550,7 @@ Resolver resolver_default =
     // .op_ConcatFromSequence			= resolver_default_op_ConcatFromSequence,
     // .op_Constant					= resolver_default_op_Constant,
     // .op_ConstantOfShape				= resolver_default_op_ConstantOfShape,
-    // .op_Conv						= resolver_default_op_Conv, //
+    .op_Conv						= resolver_default_op_Conv, //
     // .op_ConvInteger					= resolver_default_op_ConvInteger,
     // .op_ConvTranspose				= resolver_default_op_ConvTranspose,
     // .op_Cos							= resolver_default_op_Cos,
@@ -592,10 +594,10 @@ Resolver resolver_default =
     // .op_Loop						= resolver_default_op_Loop,
     // .op_LpNormalization				= resolver_default_op_LpNormalization,
     // .op_LpPool						= resolver_default_op_LpPool,
-    // .op_MatMul						= resolver_default_op_MatMul,//
+    .op_MatMul						= resolver_default_op_MatMul,//
     // .op_MatMulInteger				= resolver_default_op_MatMulInteger,
     // .op_Max							= resolver_default_op_Max,
-    // .op_MaxPool						= resolver_default_op_MaxPool,//
+    .op_MaxPool						= resolver_default_op_MaxPool,//
     // .op_MaxRoiPool					= resolver_default_op_MaxRoiPool,
     // .op_MaxUnpool					= resolver_default_op_MaxUnpool,
     // .op_Mean						= resolver_default_op_Mean,
@@ -631,8 +633,8 @@ Resolver resolver_default =
     // .op_ReduceProd					= resolver_default_op_ReduceProd,
     // .op_ReduceSum					= resolver_default_op_ReduceSum,
     // .op_ReduceSumSquare				= resolver_default_op_ReduceSumSquare,
-    // .op_Relu						= resolver_default_op_Relu,//
-    // .op_Reshape						= resolver_default_op_Reshape,//
+    .op_Relu						= resolver_default_op_Relu,//
+    .op_Reshape						= resolver_default_op_Reshape,//
     // .op_Resize						= resolver_default_op_Resize,
     // .op_ReverseSequence				= resolver_default_op_ReverseSequence,
     // .op_RoiAlign					= resolver_default_op_RoiAlign,

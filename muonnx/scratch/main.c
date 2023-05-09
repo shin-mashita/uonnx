@@ -61,13 +61,27 @@ int main()
 
     printf("%x\n", shash("Test_Op"));//0x39d6d0e3
 
-    Graph * g = graph_init(model->graph, arena, planner);
+    Graph * g = graph_init(model->graph, model, arena, planner);
+    Node * n;
 
+    const float test[] = {1,2,3,4,5,6,7,8,9,10};
 
     Tensor * t = tensor_search(arena, "Input3");
     tensor_apply((void*)input_3, sizeof(input_3), t);
 
+    // uonnx_run(ctx)
+    for(i = 0; i < g->nlen; i++)
+    {
+        n = &g->nodes[i];
+        n->operator(n);
+    }
+    // dump_node(test_node);
+    // printf("%d\n",test_node->opset);
+    // test_node->operator(test_node);
+    // dump_node(test_node);
+
     dump_graph(g);
+
 
     // printf("%d\n", arena->n_bytes);
     // dump_planner(planner);

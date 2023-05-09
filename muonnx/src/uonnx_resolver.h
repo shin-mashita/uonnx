@@ -183,7 +183,7 @@ typedef struct Resolver {
     void (*op_SoftmaxCrossEntropyLoss)(Node * n);
 } Resolver;
 
-void resolver_solve_operator(Resolver * r, Node * n);
+void resolver_solve_operator(Resolver * r, Node * n, char * op_type);
 
 void * resolver_default_create(void);
 void resolver_default_destroy(void * rctx);

@@ -7,5 +7,5 @@ Tensor * tensor_init_from_proto(TensorProto * tp, Tensor * tensor);
 void free_tensor(Tensor * t);
 void tensor_apply(void * datas, size_t size, Tensor * t);
 
-Graph * graph_init(GraphProto * gproto, TensorArena * arena, Planner * planner); // WIP
+Graph * graph_init(GraphProto * gproto, ModelProto * model, TensorArena * arena, Planner * planner); // WIP
 // void free_graph(Graph * gd); // TODO

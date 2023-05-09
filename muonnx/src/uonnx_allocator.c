@@ -1,5 +1,10 @@
 #include "uonnx_allocator.h"
 
+// MORE TODOs:
+// Add methods:
+//     arena_add = add tensor to arena
+//     tensor_malloc = init tensor by malloc-ing only. Use #define UONNX_NO_ARENA
+
 /* 
  * TENSOR_INIT 
  * Initialize a tensor with datas memset'd to 0
@@ -281,11 +286,21 @@ void tensor_apply(void * datas, size_t size, Tensor * t)
     }
 }
 
+static int reshape_dummy(Node * n)
+{
+	return 1;
+}
 
-Graph * graph_init(GraphProto * gproto, TensorArena * arena, Planner * planner)
+static void operator_dummy(Node * n)
+{
+	printf("\033[45;37mUnsupported opset\033[0m => %s-%d (%s)\r\n", n->proto->op_type, n->opset, (strlen(n->proto->domain) > 0) ? n->proto->domain : "ai.onnx");
+}
+
+Graph * graph_init(GraphProto * gproto, ModelProto * model, TensorArena * arena, Planner * planner)
 {
     int i = 0, j = 0, isInitializer = 0;
     int n_tensor_count = 0;
+    char * p, * domain;
     Graph * g;
     Node * n;
     ValueInfoProto * vp;
@@ -375,6 +390,21 @@ Graph * graph_init(GraphProto * gproto, TensorArena * arena, Planner * planner)
         n = &g->nodes[i];
         n->proto = gproto->node[i];
 
+        domain = n->proto->domain;
+		if(!domain || (strlen(domain) == 0))
+			domain = "ai.onnx";
+		for(j = 0; j < model->n_opset_import; j++)
+		{
+			p = model->opset_import[j]->domain;
+			if(!p || (strlen(p) == 0))
+				p = "ai.onnx";
+			if(strcmp(domain, p) == 0)
+			{
+				n->opset = model->opset_import[j]->version;
+				break;
+			}
+		}
+
         n->inputs = malloc(sizeof(Tensor *)*gproto->node[i]->n_input);
         if(n->inputs)
         {
@@ -396,10 +426,36 @@ Graph * graph_init(GraphProto * gproto, TensorArena * arena, Planner * planner)
             }
         }
 
-        // if(!n->operator)
-        // {
-        //     resolver_solve_operator(&resolver_default, n);
-        // }
+        resolver_solve_operator(&resolver_default, n, n->proto->op_type);
+
+        if(!n->reshape)
+            n->reshape = reshape_dummy;
+		if(!n->operator)
+			n->operator = operator_dummy;
+		if(n->init)
+		{
+			if(n->init(n) <= 0)
+			{
+				if(g->nodes)
+				{
+					for(j = 0; j <= i; j++)
+					{
+						n = &g->nodes[j];
+						if(n->exit)
+							n->exit(n);
+						if(n->inputs)
+							free(n->inputs);
+						if(n->outputs)
+							free(n->outputs);
+					}
+					free(g->nodes);
+				}
+				free(g);
+				return NULL;
+			}
+		}
+		if(n->reshape)
+			n->reshape(n);
     }
 
     return g;
