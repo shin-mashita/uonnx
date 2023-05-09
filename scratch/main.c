@@ -15,6 +15,8 @@ int main()
     struct onnx_context_t * ctx;
 	struct onnx_tensor_t * input;
 	struct onnx_tensor_t * output;
+	struct onnx_tensor_t * test;
+	
 
 
 	// static const float input_3[] = {
@@ -51,13 +53,14 @@ int main()
     struct onnx_tensor_t * img = onnx_tensor_alloc_from_file("./scratch/input_0.pb");
 
     ctx = onnx_context_alloc_from_file("./scratch/model.onnx", NULL, 0);
-	float * test = malloc(sizeof(float));
+
 
     if(ctx)
     {
-        onnx_context_dump(ctx, 0);
+        // onnx_context_dump(ctx, 0);
 
         input = onnx_tensor_search(ctx, "Input3");
+		test = onnx_tensor_search(ctx, "Parameter193");
 		output = onnx_tensor_search(ctx, "Plus214_Output_0");
 
 		printf("%d %d\n\n", output->dims[0], output->dims[1]);
@@ -66,6 +69,8 @@ int main()
 		onnx_tensor_apply(input, img->datas, img->ndata * onnx_tensor_type_sizeof(img->type));
         onnx_tensor_dump(input, 1);
 		onnx_run(ctx);
+
+		printf("%d\n", test->strides[3]);
 
         onnx_tensor_dump(output, 1);
 

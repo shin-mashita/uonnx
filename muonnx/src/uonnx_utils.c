@@ -57,6 +57,8 @@ char * TensorType2String(TensorType t)
             return "STRING";
             break;
         default:
+            return NULL;
             break;
     }
 }
+

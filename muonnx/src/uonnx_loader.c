@@ -8,7 +8,7 @@ ModelProto * load_model_buf(const void * buf, size_t len)
 
 ModelProto * load_model(const char * filename)
 {
-    ModelProto * model;
+    ModelProto * model = NULL;
     FILE * fp;
 	void * buf;
 	size_t l, len;

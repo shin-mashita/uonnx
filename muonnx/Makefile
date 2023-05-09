@@ -61,7 +61,7 @@ $(LIBPATH):$(COBJS)
 # Rule for making apps
 run: $(COBJS) $(APPOBJS)
 	@echo [LD] Linking $(APP)
-	$(CC) -o $(BUILDDIR)/$(APP).out $(OBJS) $(CFLAGS) $(INCDIRS) $(LIBS) -static
+	@$(CC) -o $(BUILDDIR)/$(APP).out $(OBJS) $(CFLAGS) $(INCDIRS) $(LIBS) -static
 	@echo
 	@echo [MK] App executable found at $(BUILDDIR)/$(APP).out
 	@echo

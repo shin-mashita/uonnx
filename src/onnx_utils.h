@@ -66,14 +66,18 @@ static inline void onnx_tensor_offset_to_indices(struct onnx_tensor_t * t, int o
 static inline int onnx_tensor_reshape(struct onnx_tensor_t * y, int * dims, int ndim, enum onnx_tensor_type_t type)
 {
 	if((y->ndim != ndim) || (dims && (memcmp(y->dims, dims, sizeof(int) * y->ndim) != 0)) || (y->type != type))
+	{
+		printf("Tensor reinitializing.");
 		onnx_tensor_reinit(y, type, dims, ndim);
+	}
+		
 	return 1;
 }
 
 static inline int onnx_tensor_reshape_identity(struct onnx_tensor_t * y, struct onnx_tensor_t * x, enum onnx_tensor_type_t type)
 {
 	if((y->ndim != x->ndim) || (memcmp(y->dims, x->dims, sizeof(int) * y->ndim) != 0) || (y->type != type))
-		onnx_tensor_reinit(y, type, x->dims, x->ndim);
+		printf("Tensor reinitializing."); onnx_tensor_reinit(y, type, x->dims, x->ndim);
 	return 1;
 }
 
@@ -105,7 +109,7 @@ static inline int onnx_tensor_reshape_multi_broadcast(struct onnx_tensor_t * y, 
 		}
 	}
 	if((y->type != type) || (y->ndim != ndim) || (memcmp(y->dims, dims, sizeof(int) * ndim) != 0))
-		onnx_tensor_reinit(y, type, dims, ndim);
+		printf("Tensor reinitializing."); onnx_tensor_reinit(y, type, dims, ndim);
 	return 1;
 }
 

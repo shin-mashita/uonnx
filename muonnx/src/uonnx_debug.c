@@ -23,6 +23,7 @@ void dump_graph(Graph * g)
         n = &g->nodes[i];
 
         printf("Node %d\n",i);
+        printf("Operator: %s\n", n->proto->op_type);
 
         printf("Input\n");
         for(j = 0; j < n->ninputs; j++)
@@ -123,6 +124,9 @@ void dump_tensor(Tensor * t)
     printf("\tdims: ");
     for(i = 0; i < t->ndim; i++) printf("%d ", t->dims[i]);
     printf("\n");
+    printf("\tstrides: ");
+    for(i = 0; i < t->ndim; i++) printf("%d ", t->strides[i]);
+    printf("\n");
     printf("\tisInitializer: %d", t->isInitializer);
     printf("\n\n");
 
@@ -133,4 +137,20 @@ void dump_tensor(Tensor * t)
     //     if(i<ndim-1)printf(" x ");
     // }
     // printf(")\n");
+}
+
+void dump_planner(Planner * planner)
+{
+    int i = 0;
+    for(i = 0; i < planner->n_plans; i++)
+    {
+        if(planner->plans[i]->tensor_name)
+        {
+            printf("Tensor \"%s\" assigned in idx %d\n", planner->plans[i]->tensor_name, planner->plans[i]->index);
+        }
+        else
+        {
+            printf("Tensor NULL assigned in idx NULL\n");
+        }
+    }
 }

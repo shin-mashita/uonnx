@@ -4,6 +4,6 @@
 #include <uonnx.h>
 
 Onnx__ModelProto * load_model_buf(const void * buf, size_t len);
-Onnx__ModelProto * load_model_file(const char * filename);
+Onnx__ModelProto * load_model(const char * filename);
 
 #endif
