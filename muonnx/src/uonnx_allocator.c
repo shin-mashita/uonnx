@@ -17,112 +17,88 @@ Tensor * tensor_init(   const char * name,
                         int * dims,  // TODO: Check if function can accept int64_t for 32 bit MCUs
                         int ndim, 
                         TensorArena * arena, 
-                        int tensor_idx, 
-                        int data_idx) // byte offset. REQUIRED: multiply by sizeof(dtype)
+                        Tensor * tensor, 
+                        int data_idx) // byte offset. REQUIRED for arenas: multiply by sizeof(dtype)
 {
-    // Check if & needed
     int i = 0; size_t ndata = 1;
     Tensor * t;
     
-    if(arena != NULL)
+    if(arena)
     {
-        t = arena->tensors[tensor_idx];
+        t = tensor;
     }
     else
     {
-        
         t = malloc(sizeof(Tensor)); //TODO: Find way to free if arena == NULL
     }
-    
 
-    // TODO: Add conditionals for NULL statements
-    t->name = NULL;
-    t->dims = NULL;
-    t->strides = NULL;
-    t->ndim = 0;
-
-    t->name = strdup(name); // Free later
-    t->type = type;
-
-    //WORKAROUND FOR DOUBLE FREE
-    t->isInitializer = 0;
+    t->name = strdup(name);
+    if(!t->name)
+    {
+        if(!arena) free(t);
+        return NULL;
+    }
 
     t->strides = malloc(sizeof(int)*ndim);
     t->dims = malloc(sizeof(int)*ndim);
 
-
-    
-    if(t->dims && t->strides)
+    if((!t->strides)||(!t->dims))
     {
-        t->strides[ndim - 1] = 1;
-        
-        for(i = ndim - 2; i >= 0; i--)
-        {
-            t->strides[i] = dims[i + 1] * t->strides[i + 1];
-        }
+        if(t->strides) free(t->strides);
+        if(t->dims) free(t->dims);
 
-        for(i = 0; i < ndim; i++)
-        {
-            t->dims[i] =  dims[i];
-        }
-
-        // memcpy(t->dims, dims, sizeof(int) * ndim); // Also works
-        t->ndim = ndim;
-    }
-    else
-    {
-        if(t->strides)
-        {
-            free(t->strides);
-            t->strides = NULL;
-        }
-        if(t->dims)
-        {
-            free(t->dims);
-            t->dims = NULL;
-        }
+        free(t->name);
+        if(!arena) free(t);
+        return NULL;
     }
 
+    t->strides[ndim - 1] = 1;
+    for(i = ndim - 2; i >= 0; i--)
+    {
+        t->strides[i] = dims[i + 1] * t->strides[i + 1];
+    }
+
+    memcpy(t->dims, dims, sizeof(int) * ndim);
 
     for(i=0; i<ndim; i++)
-    {
         ndata*= t->dims[i];
-    }
-
     if(ndata != 0)
-    {
         t->ndata = ndata;
+    else
+    {
+        free(t->strides);
+        free(t->dims);
+        free(t->name);
+        if(!arena) free(t);
+        return NULL;
     }
 
     if(arena)
     {
-        t->datas = arena->datas + data_idx; // EDITED from &arena->datas[data_idx] to arena->datas + data_idx
+        t->datas = arena->datas + data_idx;
     }
     else
     {
-        switch(t->type)
+        t->datas = malloc(onnx_tensor_type_sizeof(t->type)*ndata);
+        if(!t->datas)
         {
-            case TENSOR_TYPE_FLOAT32:
-                t->datas = malloc(sizeof(float)*ndata);
-                memset(t->datas, 0, sizeof(float)*ndata);
-                break;
-            case TENSOR_TYPE_INT64:
-                t->datas = malloc(sizeof(int64_t)*ndata);
-                memset(t->datas, 0, sizeof(int64_t)*ndata);
-                break;
-            default:
-                break;
+            free(t->strides);
+            free(t->dims);
+            free(t->name);
+            free(t);
+            return NULL;
         }
+        memset(t->datas, 0, onnx_tensor_type_sizeof(t->type)*ndata);
     }
 
-    
+    t->type = type;
+    t->isInitializer = 0;
+    t->ndim = ndim;
 
     return t;
-
 }
 
-// TODO add params for tensor arena and for planner
-Tensor * tensor_init_from_value_info(ValueInfoProto * v, TensorArena * arena, int tensor_idx, int data_idx)
+Tensor * tensor_init_from_value_info(ValueInfoProto * v, TensorArena * arena, Tensor * tensor, int data_idx)
 {
     Tensor * t; 
     int type;
@@ -157,10 +133,13 @@ Tensor * tensor_init_from_value_info(ValueInfoProto * v, TensorArena * arena, in
                     }
                 }
             }
+            else
+            {
+                return NULL;
+            }
         }
 
-
-        t = tensor_init(v->name, type, dims, ndim, arena, tensor_idx, data_idx);
+        t = tensor_init(v->name, type, dims, ndim, arena, tensor, data_idx);
 
         if(dims)
         {
@@ -193,7 +172,7 @@ Tensor * tensor_init_from_proto(TensorProto * tp, Tensor * tensor)
     
     if(tp)
     {
-        t->name = tp->name;
+        t->name = strdup(tp->name);
         t->type = tp->data_type;
 
         t->dims = malloc(sizeof(int)*tp->n_dims); 
@@ -236,7 +215,7 @@ Tensor * tensor_init_from_proto(TensorProto * tp, Tensor * tensor)
                 break;
             
             default:
-                break; // ADD SUPPORT FOR OTHER DTYPES
+                break; // TODO: ADD SUPPORT FOR OTHER DTYPES
         }
 
 
@@ -256,33 +235,30 @@ void free_tensor(Tensor * t)
 {
     if(t)
     {
-        if(t->name)
-        {
-            free(t->name);
-            free(t->dims);
-        }
+        if(t->name) free(t->name);
+        if(t->dims) free(t->dims);
+        if(t->strides) free(t->strides);
+        if(t->datas) free(t->datas);
         free(t);
     }
 }
 
-
+void free_tensor_from_arena(Tensor * t)
+{
+    if(t)
+    {
+        if(t->name) free(t->name);
+        if(t->dims) free(t->dims);
+        if(t->strides) free(t->strides);
+        free(t);
+    }
+}
 
 void tensor_apply(void * datas, size_t size, Tensor * t)
 {
     if(t->name != NULL && t)
     {
         memcpy(t->datas, datas, size); // Run with sizeof()
-        // switch(t->type)
-        // {
-        //     case TENSOR_TYPE_FLOAT32:
-        //         memcpy(t->datas, datas, ndata);
-        //         break;
-                
-        //     case TENSOR_TYPE_INT64:
-        //         memcpy(t->datas, datas, ndata);
-        //         break;
-        // }
-        
     }
 }
 
@@ -305,24 +281,26 @@ Graph * graph_init(GraphProto * gproto, ModelProto * model, TensorArena * arena,
     Node * n;
     ValueInfoProto * vp;
 
-    g = malloc(sizeof(Graph));
-
     if(!gproto) return NULL;
+
+    g = malloc(sizeof(Graph));
     if(!g) return NULL;
     
     memset(g, 0, sizeof(Graph));
 
-    g->nlen = gproto->n_node;
-
-    g->nodes = malloc(sizeof(Node)*g->nlen);
+    g->nodes = malloc(sizeof(Node)*gproto->n_node);
     if(!g->nodes)
     {
         free(g);
         return NULL;
     }
 
+    g->nlen = gproto->n_node;
+
+    // Add inputs to graph
     for(i = 0; i < gproto->n_input; i++)
     {
+        // Add initializers into arena
         vp = gproto->input[i];
         if(!tensor_search(arena, vp->name))
         {
@@ -333,6 +311,8 @@ Graph * graph_init(GraphProto * gproto, ModelProto * model, TensorArena * arena,
                     if(n_tensor_count >= arena->n_tensors)
                     {
                         printf("Tensor blocks not enough. Expand arena.\n");
+                        free(g->nodes);
+                        free(g->nlen);
                         return NULL;
                     }
                     tensor_init_from_proto(gproto->initializer[j], arena->tensors[n_tensor_count]);
@@ -341,20 +321,25 @@ Graph * graph_init(GraphProto * gproto, ModelProto * model, TensorArena * arena,
                 }
             }
 
+            // Initialize non-initializer inputs
             if(!isInitializer)
             {
                 if(n_tensor_count >= arena->n_tensors)
                 {
                     printf("Tensor blocks not enough. Expand arena.\n");
+                    free(g->nodes);
+                    free(g->nlen);
                     return NULL;
                 }
-                tensor_init_from_value_info(vp, arena, n_tensor_count, get_plan(vp->name, planner));
+                tensor_init_from_value_info(vp, arena, arena->tensors[n_tensor_count], get_plan(vp->name, planner));
                 n_tensor_count++;
             }
+
             isInitializer = 0;
         }
     }
 
+    // Add outputs to graph
     for(i = 0; i < gproto->n_output; i++)
     {
         vp = gproto->output[i];
@@ -363,9 +348,11 @@ Graph * graph_init(GraphProto * gproto, ModelProto * model, TensorArena * arena,
             if(n_tensor_count >= arena->n_tensors)
             {
                 printf("Tensor blocks not enough. Expand arena.\n");
+                free(g->nodes);
+                free(g->nlen);
                 return NULL;
             }
-            tensor_init_from_value_info(vp, arena, n_tensor_count, get_plan(vp->name, planner));
+            tensor_init_from_value_info(vp, arena, arena->tensors[n_tensor_count], get_plan(vp->name, planner));
             n_tensor_count++;
         }
     }
@@ -378,9 +365,11 @@ Graph * graph_init(GraphProto * gproto, ModelProto * model, TensorArena * arena,
             if(n_tensor_count >= arena->n_tensors)
             {
                 printf("Tensor blocks not enough. Expand arena.\n");
+                free(g->nodes);
+                free(g->nlen);
                 return NULL;
             }
-            tensor_init_from_value_info(vp, arena, n_tensor_count, get_plan(vp->name, planner));
+            tensor_init_from_value_info(vp, arena, arena->tensors[n_tensor_count], get_plan(vp->name, planner));
             n_tensor_count++;
         }
     }
@@ -459,6 +448,27 @@ Graph * graph_init(GraphProto * gproto, ModelProto * model, TensorArena * arena,
     }
 
     return g;
-
-
 }
+
+void free_graph(Graph * g)
+{
+    Node * n;
+    int i = 0;
+
+    if(g)
+    {
+        if(g->nodes)
+        {
+            for(i = 0; i < g->nlen; i++)
+            {
+                n = &g->nodes[i];
+                if(n->exit) n->exit(n);
+                if(n->inputs) free(n->inputs);
+                if(n->outputs) free(n->outputs);
+            }
+            free(g->nodes);
+        }
+        free(g);
+    }
+}
+

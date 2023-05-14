@@ -64,6 +64,7 @@ void free_planner(Planner * planner)
     int i = 0;
     Plan * p;
 
+    
     if(planner)
     {
         if(planner->plans)
@@ -76,9 +77,10 @@ void free_planner(Planner * planner)
             
             free(planner->plans);
         }
-
         free(planner);
+        planner = NULL;
     }
+    
 }
 
 void planner_add(char * tensor_name, size_t idx,Planner * planner)

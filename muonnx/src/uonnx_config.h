@@ -140,11 +140,13 @@ static inline float bfloat16_to_float32(uint16_t v)
  */
 static inline uint32_t shash(const char * s)
 {
-	uint32_t v = 5381;
+	uint32_t v = 5381; 
 	if(s)
 	{
 		while(*s)
-			v = (v << 5) + v + (*s++);
+		{
+			v = (v << 5) + v + (*s++); 
+		}
 	}
 	return v;
 }

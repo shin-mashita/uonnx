@@ -2,15 +2,20 @@
 
 TensorArena * arena_init(const int MAX_TENSORS, const size_t MAX_BYTES)
 {
-    int i;
-    TensorArena * arena = (TensorArena *)malloc(sizeof(arena));
+    int i = 0, j = 0;
+    TensorArena * arena = (TensorArena *)malloc(sizeof(TensorArena));
+    memset(arena, 0, sizeof(arena));
 
     if(arena)
     {
-        arena->n_tensors = MAX_TENSORS;
         arena->tensors = (Tensor **)malloc(sizeof(Tensor *)*MAX_TENSORS);
+        if(!arena->tensors)
+        {
+            free(arena);
+            return NULL;
+        }
+
         arena->datas = malloc(MAX_BYTES);
-        arena->n_bytes = MAX_BYTES;
         if(!arena->datas)
         {
             free(arena->tensors);
@@ -18,13 +23,31 @@ TensorArena * arena_init(const int MAX_TENSORS, const size_t MAX_BYTES)
             return NULL;
         }
         memset(arena->datas, 0, MAX_BYTES);
-        
-        for(i=0; i<arena->n_tensors; i++)
-        {
-            arena->tensors[i] = (Tensor *)malloc(sizeof(Tensor));
-            arena->tensors[i]->name = NULL;
-        }
 
+        arena->n_bytes = MAX_BYTES;
+        arena->n_tensors = MAX_TENSORS;
+
+        for(i=0; i<MAX_TENSORS; i++)
+        {
+            arena->tensors[i] = malloc(sizeof(Tensor));
+            if(arena->tensors[i])
+            {
+                arena->tensors[i]->name = NULL;
+                arena->tensors[i]->dims = NULL;
+                arena->tensors[i]->strides = NULL;
+            }
+            else
+            {
+                for(j = 0; j < MAX_TENSORS; j++)
+                {
+                    if(arena->tensors[j]) free(arena->tensors[j]);
+                }
+                free(arena->datas);
+                free(arena->tensors);
+                free(arena);
+                return NULL;
+            }
+        }
         return arena;
     }
 
@@ -35,7 +58,7 @@ TensorArena * arena_init_from_planner(Planner * planner)
 {
     if(planner)
     {
-        return arena_init(planner->max_arena_n_tensors, planner->max_arena_size);
+        return arena_init(planner->max_arena_n_tensors, (size_t)planner->max_arena_size);
     }
 
     return NULL;
@@ -43,23 +66,28 @@ TensorArena * arena_init_from_planner(Planner * planner)
 
 void free_arena(TensorArena * arena)
 {
-    int i;
+    int i = 0;
 
     if(arena)
     {
-        if(arena->datas) // BUG: CAUSING DOUBLE FREE!!!
+        for(i=0; i<arena->n_tensors; i++)
+        {
+            if(arena->tensors[i])
+            {
+                free_tensor_from_arena(arena->tensors[i]);
+            }
+        }
+
+        if(arena->datas)
         {
             free(arena->datas);
         }
 
-        for(i=0; i<arena->n_tensors; i++)
-        {
-            free_tensor(arena->tensors[i]);
-        }
-
         if(arena->tensors)
+        {
             free(arena->tensors);
-
+        }
+        
         free(arena);
     }
 }

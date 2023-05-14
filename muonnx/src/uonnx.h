@@ -20,4 +20,19 @@
 #include "uonnx_resolver.h"
 #include "uonnx_utils.h"
 
+Context * uonnx_init(   const char * filename, 
+                        const void * model_buf,
+                        size_t model_len,
+                        void * input_buf, 
+                        size_t input_len,
+                        char * input_name, 
+                        void * output_buf, 
+                        size_t output_len,
+                        char * output_name, 
+                        Planner * planner);
+
+void uonnx_run(Context * context);
+void uonnx_free(Context * context);
+
+
 #endif

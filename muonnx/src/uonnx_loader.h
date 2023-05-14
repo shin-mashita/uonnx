@@ -5,5 +5,6 @@
 
 Onnx__ModelProto * load_model_buf(const void * buf, size_t len);
 Onnx__ModelProto * load_model(const char * filename);
+void free_model(ModelProto * model);
 
 #endif

@@ -33,6 +33,7 @@ static int Conv_init(Node * n)
 	struct operator_pdata_t * pdat;
 	int64_t * ints;
 	int i, l;
+	char * auto_pad_str;
 
 	if((n->ninputs >= 2) && (n->noutputs == 1))
 	{
@@ -40,7 +41,8 @@ static int Conv_init(Node * n)
 		if(pdat)
 		{
 			memset(pdat, 0, sizeof(struct operator_pdata_t));
-			switch(shash(onnx_attribute_read_string(n, "auto_pad", "NOTSET")))
+
+			switch(shash(onnx_attribute_read_string(n, "auto_pad", "NOTSET"))) // ERROR: Invalid read of size 1. shash reading *s++.
 			{
 			case 0xc3966fc2: /* "NOTSET" */
 				pdat->auto_pad = AUTO_PAD_NOTSET;
@@ -58,6 +60,7 @@ static int Conv_init(Node * n)
 				pdat->auto_pad = AUTO_PAD_NOTSET;
 				break;
 			}
+
 			pdat->group = onnx_attribute_read_int(n, "group", 1);
 			pdat->nkernel = onnx_attribute_read_ints(n, "kernel_shape", &ints);
 			if(pdat->nkernel > 0)

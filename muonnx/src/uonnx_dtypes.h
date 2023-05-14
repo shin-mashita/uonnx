@@ -79,13 +79,6 @@ typedef struct TensorArena //TODO: Define in separate C module
 	size_t n_bytes;
 } TensorArena;
 
-typedef struct Context 
-{
-    ModelProto * model; // to free after context initialization
-    // Resolver * resolver;
-    Graph * graph;
-} Context;
-
 typedef struct Plan
 {
 	char * tensor_name;
@@ -100,5 +93,21 @@ typedef struct Planner
 	int max_arena_n_tensors;
 } Planner;
 
+typedef struct Context 
+{
+    ModelProto * model;
+    Graph * graph;
+	TensorArena * arena;
+	Planner * planner;
+
+	void * input_buf; 
+	size_t input_len;
+	Tensor * input_tensor;
+
+	void * output_buf; 
+	size_t output_len;
+	Tensor * output_tensor;
+	
+} Context;
 
 #endif
