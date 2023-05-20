@@ -66,9 +66,7 @@ Context * uonnx_init(   const char * filename,
     context->output_tensor = tensor_search(context->arena, output_name);
 
     context->planner = planner;
-    free_planner(context->planner);
-    context->planner = NULL;
-
+    
     return context;
 }
 

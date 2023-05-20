@@ -49,7 +49,8 @@ static inline int onnx_tensor_reshape(Tensor * y, int * dims, int ndim, TensorTy
 {
     if((y->ndim != ndim) || (dims && (memcmp(y->dims, dims, sizeof(int) * y->ndim) != 0)) || (y->type != type))
     {
-        printf("Tensor %s invalid and need to be reinitialized.\n", y->name);
+        // Conditional compile
+        // printf("Tensor %s invalid and need to be reinitialized.\n", y->name);
         return 0;
     }
         
@@ -60,7 +61,8 @@ static inline int onnx_tensor_reshape_identity(Tensor * y, Tensor * x, TensorTyp
 {
     if((y->ndim != x->ndim) || (memcmp(y->dims, x->dims, sizeof(int) * y->ndim) != 0) || (y->type != type))
     {
-        printf("Tensor %s invalid and need to be reinitialized.\n", y->name);
+        // Conditional compile
+        // printf("Tensor %s invalid and need to be reinitialized.\n", y->name);
         return 0;
     }
     return 1;
@@ -95,7 +97,8 @@ static inline int onnx_tensor_reshape_multi_broadcast(Tensor * y, Tensor * a, Te
     }
     if((y->type != type) || (y->ndim != ndim) || (memcmp(y->dims, dims, sizeof(int) * ndim) != 0))
     {
-        printf("Tensor %s invalid and need to be reinitialized.\n", y->name);
+        // Conditional compile
+        // printf("Tensor %s invalid and need to be reinitialized.\n", y->name);
         return 0;
     }
     return 1;

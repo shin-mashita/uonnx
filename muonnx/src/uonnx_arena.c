@@ -4,7 +4,7 @@ TensorArena * arena_init(const int MAX_TENSORS, const size_t MAX_BYTES)
 {
     int i = 0, j = 0;
     TensorArena * arena = (TensorArena *)malloc(sizeof(TensorArena));
-    memset(arena, 0, sizeof(arena));
+    memset(arena, 0, sizeof(TensorArena));
 
     if(arena)
     {

@@ -135,6 +135,7 @@ static int Conv_reshape(Node * n)
 	int dims[ndim];
 	int pad;
 	int i;
+	// int ret; 
 
 	switch(pdat->auto_pad)
 	{
@@ -183,6 +184,39 @@ static int Conv_reshape(Node * n)
 			break;
 		}
 	}
+
+	// ret = onnx_tensor_reshape(y, dims, ndim, x->type);
+	// if(!ret)
+	// {		
+	// 	if(y->ndim!=ndim)
+	// 	{
+	// 		printf("Unequal ndims. %d: %d\n", y->ndim, x->ndim);
+	// 	}
+
+	// 	if(memcmp(y->dims, dims, sizeof(int) * y->ndim) != 0)
+	// 	{
+	// 		printf("Incorrect dims\n");
+	// 		printf("ydim: ");
+	// 		for(i=0; i < y->ndim; i++)
+	// 		{
+	// 			printf("%d ",y->dims[i]);
+	// 		}
+	// 		printf("\n");
+	// 		printf("dim: ");
+	// 		for(i=0; i < ndim; i++)
+	// 		{
+	// 			printf("%d ",dims[i]);
+	// 		}
+	// 		printf("\n");
+	// 	}
+		
+	// 	if(y->type != x->type)
+	// 	{
+	// 		printf("Incorrect type. %s: %s\n",TensorType2String(y->type), TensorType2String(x->type));
+	// 	}
+	// }
+	// return ret;
+
 	return onnx_tensor_reshape(y, dims, ndim, x->type);
 }
 

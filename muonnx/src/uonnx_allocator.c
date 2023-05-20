@@ -269,7 +269,9 @@ static int reshape_dummy(Node * n)
 
 static void operator_dummy(Node * n)
 {
-	printf("\033[45;37mUnsupported opset\033[0m => %s-%d (%s)\r\n", n->proto->op_type, n->opset, (strlen(n->proto->domain) > 0) ? n->proto->domain : "ai.onnx");
+    // Conditional compile
+	// printf("\033[45;37mUnsupported opset\033[0m => %s-%d (%s)\r\n", n->proto->op_type, n->opset, (strlen(n->proto->domain) > 0) ? n->proto->domain : "ai.onnx");
+    return;
 }
 
 Graph * graph_init(GraphProto * gproto, ModelProto * model, TensorArena * arena, Planner * planner)
@@ -310,7 +312,7 @@ Graph * graph_init(GraphProto * gproto, ModelProto * model, TensorArena * arena,
                 {
                     if(n_tensor_count >= arena->n_tensors)
                     {
-                        printf("Tensor blocks not enough. Expand arena.\n");
+                        // printf("Tensor blocks not enough. Expand arena.\n"); TODO: Conditional Compile
                         free(g->nodes);
                         free(g->nlen);
                         return NULL;
@@ -326,7 +328,7 @@ Graph * graph_init(GraphProto * gproto, ModelProto * model, TensorArena * arena,
             {
                 if(n_tensor_count >= arena->n_tensors)
                 {
-                    printf("Tensor blocks not enough. Expand arena.\n");
+                    // printf("Tensor blocks not enough. Expand arena.\n"); TODO: Conditional Compile
                     free(g->nodes);
                     free(g->nlen);
                     return NULL;
@@ -347,7 +349,7 @@ Graph * graph_init(GraphProto * gproto, ModelProto * model, TensorArena * arena,
         {
             if(n_tensor_count >= arena->n_tensors)
             {
-                printf("Tensor blocks not enough. Expand arena.\n");
+                // printf("Tensor blocks not enough. Expand arena.\n"); TODO: Conditional Compile
                 free(g->nodes);
                 free(g->nlen);
                 return NULL;
@@ -364,7 +366,7 @@ Graph * graph_init(GraphProto * gproto, ModelProto * model, TensorArena * arena,
         {
             if(n_tensor_count >= arena->n_tensors)
             {
-                printf("Tensor blocks not enough. Expand arena.\n");
+                // printf("Tensor blocks not enough. Expand arena.\n"); TODO: Conditional Compile
                 free(g->nodes);
                 free(g->nlen);
                 return NULL;

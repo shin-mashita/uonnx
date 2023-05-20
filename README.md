@@ -15,3 +15,9 @@ Memory-efficient ONNX inference engine for tinyML
 
 onnx_loader.h
 onnx_allocator.h
+
+
+
+ESP32 MNIST TEST
+
+load_model() = 36812 B

@@ -132,7 +132,7 @@ char * onnx_attribute_read_string(Node * n, const char * name, char * def)
 	{
 		if(attr->s.len > 0)
 		{
-			// attr->s.data[attr->s.len] = 0; // ERROR: Causing invalid write of size 1. Writing at end of index.
+			attr->s.data[attr->s.len] = 0; // ERROR: Causing invalid write of size 1. Writing at end of index.
 			return (char *)attr->s.data;
 		}
 	}

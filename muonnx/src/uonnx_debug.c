@@ -12,21 +12,6 @@ void addrcmp(void *ptr1, void *ptr2)
     }
 }
 
-void dump_graph(Graph *g)
-{
-    Node *n;
-
-    int i;
-
-    for (i = 0; i < g->nlen; i++)
-    {
-        n = &g->nodes[i];
-
-        printf("Node %d\n", i);
-        dump_node(n);
-    }
-}
-
 void dump_node(Node * n)
 {
     int j;
@@ -45,18 +30,21 @@ void dump_node(Node * n)
     }
 }
 
-// for(i = 0; i < g->nlen; i++) // Add to uonnx_debug in dump_graph
-// {
-//     n = &g->nodes[i];
-//     for(j = 0; j < gproto->node[i]->n_input; j++)
-//     {
-//         printf("\tInput %d: %s\n", j, gproto->node[i]->input[j]);
-//     }
-//     for(j = 0; j < gproto->node[i]->n_output; j++)
-//     {
-//         printf("\tOutput %d: %s\n", j, gproto->node[i]->output[j]);
-//     }
-// }
+
+void dump_graph(Graph *g)
+{
+    Node *n;
+
+    int i;
+
+    for (i = 0; i < g->nlen; i++)
+    {
+        n = &g->nodes[i];
+
+        printf("Node %d\n", i);
+        dump_node(n);
+    }
+}
 
 void dump_arena(TensorArena *arena, TensorType type, size_t n)
 {
@@ -95,7 +83,7 @@ void dump_arena(TensorArena *arena, TensorType type, size_t n)
 
 void dump_tensor(Tensor *t)
 {
-    int i, j;
+    int i;
 
     if (!t || t->name == NULL)
     {
@@ -105,7 +93,7 @@ void dump_tensor(Tensor *t)
 
     printf("Tensor: \"%s\"\n", t->name);
     printf("\tdtype: %s\n", TensorType2String(t->type));
-    printf("\tndata: %ld\n", t->ndata);
+    printf("\tndata: %d\n", t->ndata);
     printf("\tdatas: ");
     switch (t->type)
     {
@@ -120,7 +108,7 @@ void dump_tensor(Tensor *t)
         for (i = 0; i < min(t->ndata, 10); i++)
         {
             int64_t *v = (int64_t *)t->datas;
-            printf("%ld ", v[i]);
+            printf("%lld ", v[i]);
         }
         break;
     default: // TODO: Log for other dtypes
