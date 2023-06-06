@@ -1,83 +1,82 @@
 #include <uonnx.h>
-
+#include "model.h"
+#include <malloc.h>
+// TODO: Tensor apply inconsistents with sizeof() and with actual indexes
 
 int main()
 {
-    // testprint();
-    // testsum(2,3);
+    const char * filename = "./scratch/model.onnx";
+    ModelProto * model;
+    Context * ctx;
+    Planner * planner;
+    static float output_buf[10];
 
-    // Teststruct * s;
-    // s = malloc(sizeof(Teststruct));
-    // s = init_teststruct(s);
-    // print_teststruct(s);
+    // FFD per node
 
-    // onnx_model_dump(NULL);
-    struct onnx_context_t * ctx;
-	struct onnx_tensor_t * input;
-	struct onnx_tensor_t * output;
-	struct onnx_tensor_t * test;
-	
+    model = load_model(filename);
+    planner = planner_init_from_proto(model->graph);
+    dump_planner(planner);
 
+    // planner = planner_init(13, sizeof(float)*(15204), 21);
+    // planner_add("Parameter193_reshape1", 0, planner); // fp32 (2560) - Node 0 10
+    // planner_add("Input3", sizeof(float)*(2560+6272), planner); // fp32 (784) - Node 1
+    // planner_add("Convolution28_Output_0", sizeof(float)*(2560), planner); // fp32 (6272) - Node 1 2 
+    // planner_add("Plus30_Output_0", sizeof(float)*(2560+6272), planner); // fp32 (6272) - Node 2 3 
+    // planner_add("ReLU32_Output_0", sizeof(float)*(2560), planner); // fp32 (6272) - Node 3 4
+    // planner_add("Pooling66_Output_0", sizeof(float)*(2560+6272), planner); // fp32 (1568) - Node 4 5
+    // planner_add("Convolution110_Output_0", sizeof(float)*(2560), planner); // fp32 (3136) - Node 5 6
+    // planner_add("Plus112_Output_0", sizeof(float)*(2560+3136), planner); // fp32 (3136) - Node 6 7
+    // planner_add("ReLU114_Output_0", sizeof(float)*(2560), planner); // fp32 (3136) - Node 7 8
+    // planner_add("Pooling160_Output_0", sizeof(float)*(2560+3136), planner); // fp32 (256) - Node 8 9 
+    // planner_add("Pooling160_Output_0_reshape0", sizeof(float)*(2560), planner); // fp32 (256) - 9 10
+    // planner_add("Times212_Output_0", sizeof(float)*(2560+256), planner); // fp32 (10) - Node 10 11
+    // planner_add("Plus214_Output_0", sizeof(float)*(0), planner); // fp32 (10) - Node 11
 
-	// static const float input_3[] = {
-	// 	0,   0,   0,   0,   0,   0,   0,   0,   0,   1,   3,   0,   0,   4,   2,   0,  11,   0,   0,  14,   1,   0,  19,   0,   0,   0,   0,   0,
-	// 	0,   0,   0,   0,   0,   0,   0,   0,   0,  12,   0,   0,   7,   0,   1,  10,   0,   2,   2,  16,   0,   3,   3,   0,   0,   0,   0,   0,
-	// 	0,   0,   0,   0,   0,   0,   0,   0,   7,   8,   0,   8,   0,   0,   8,   0,   0,  19,   0,   0,   1,  21,   0,   4,   0,   0,   0,   0,
-	// 	0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   1,   0,   0,   1,   0,   0,   0,   0,   0,  11,   0,   0,  10,   3,   0,   0,   0,   0,
-	// 	0,   0,   0,   0,   0,   0,   0,   0,  13,   0,  15,  10,  26,  34,  17,  77, 181, 178,  35,   4,   0,   0,   0,   0,   0,   0,   0,   0,
-	// 	0,   0,   0,   0,   0,   0,   0,   0,   0,   0, 150, 254, 250, 251, 243, 252, 252, 255,  45,   6,   0,   5,   0,   9,   0,   0,   0,   0,
-	// 	0,   0,   0,   0,   0,   0,   0,   0,   7,  72, 205, 255, 238, 243, 255, 254, 251, 248, 201, 198,  57,   0,  19,   0,   0,   0,   0,   0,
-	// 	0,   0,   0,   0,   0,   0,   0,   0,   0, 218, 255, 241, 255, 249, 250, 251, 250, 255, 255, 242, 224,  49,   0,  12,   0,   0,   0,   0,
-	// 	0,   0,   1,   2,   3,   2,   2,   1,   0,  65, 228, 255, 254, 244, 119,  34,  41, 110, 250, 255, 248, 124,  20,   0,   0,   0,   0,   0,
-	// 	1,   1,   0,   0,   0,   0,   0,   0,  12,   0,  62, 103, 113, 117,  34,   0,   0,   0, 200, 244, 255, 255,   0,  12,   0,   0,   0,   0,
-	// 	2,   1,   0,   0,   0,   0,   1,   2,   0,   0,   2,   4,   0,  11,   0,   7,   6,   0,  75, 244, 255, 255,   4,   0,   0,   0,   0,   0,
-	// 	0,   0,   0,   1,   2,   3,   4,   4,   0,  14,   0,   0,   0,   9,   0,   2,   0,   0,  34, 255, 255, 253,  10,  10,   0,   0,   0,   0,
-	// 	0,   0,   1,   2,   3,   2,   0,   0,   3,   2,   0,  13,  11,   0,   0,   0,   6,  12,  99, 255, 254, 248,  15,  12,   0,   0,   0,   0,
-	// 	0,   1,   1,   1,   0,   0,   0,   0,   1,   1,   0,   0,   5,   6,  11,   0,   0,  17, 184, 247, 255, 243,  13,   0,   0,   0,   0,   0,
-	// 	3,   2,   0,   0,   0,   0,   2,   4,   4,   0,  11,   0,  51,  94,  85,   5,   5,  25, 246, 246, 255, 208,   0,   9,   0,   0,   0,   0,
-	// 	4,   1,   0,   0,   1,   7,  15,  19,  99, 103, 182, 189, 237, 253, 252, 191, 190, 227, 243, 252, 210,  18,   7,   0,   0,   0,   0,   0,
-	// 	0,   4,   0,   0,  32, 109, 185, 247, 255, 242, 255, 244, 255, 255, 242, 251, 255, 240, 255, 255, 218, 124,   9,   0,   0,   0,   0,   0,
-	// 	2,   0,   0,   0, 127, 255, 235, 255, 255, 247, 229, 212, 242, 250, 255, 255, 248, 255, 253, 249, 255, 243, 170,  12,   0,   0,   0,   0,
-	// 	0,  11,   0,   9, 253, 255, 255, 233, 202,  85,   0,  53, 196, 238, 255, 227, 238, 142, 109, 193, 255, 240, 255, 180,   0,   0,   0,   0,
-	// 	6,   0,  22,   1, 245, 243, 254, 255, 217, 235, 226, 213, 244, 251, 255, 239,  77,   0,   0,  20, 182, 247, 239, 243,   0,   0,   0,   0,
-	// 	0,   0,   0,   4, 165, 251, 255, 245, 255, 242, 253, 250, 255, 197, 107,  59,   0,  18,   2,   6,   0,  54, 255, 158,   0,   0,   0,   0,
-	// 	0,  24,   0,   0,   6,  34, 167, 194, 176, 183, 164,  44,   2,  10,   6,   6,   0,   0,   5,   0,   1,   0,  14,   2,   0,   0,   0,   0,
-	// 	10,   0,  14,   0,  12,   0,   5,   0,   1,   0,   6,   0,   7,   0,   0,   0,   8,   0,  10,   0,   5,   0,   0,  10,   0,   0,   0,   0,
-	// 	0,  14,   0,   4,   0,   0,  25,   0,   0,   9,   0,   0,   9,   0,  11,   0,   1,   0,   0,   2,   0,   0,   7,   0,   0,   0,   0,   0,
-	// 	0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,
-	// 	0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,
-	// 	0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,
-	// 	0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,
-	// };
+    // dump_planner(planner);
+    // planner = planner_init(13, sizeof(float)*(33668), 21);
+    // planner_add("Parameter193_reshape1", 0, planner); // fp32 (2560) - Node 0 10
+    // planner_add("Input3", sizeof(float)*(2560), planner); // fp32 (784) - Node 1
+    // planner_add("Convolution28_Output_0", sizeof(float)*(3344), planner); // fp32 (6272) - Node 1 2 
+    // planner_add("Plus30_Output_0", sizeof(float)*(9616), planner); // fp32 (6272) - Node 2 3 
+    // planner_add("ReLU32_Output_0", sizeof(float)*(15888), planner); // fp32 (6272) - Node 3 4
+    // planner_add("Pooling66_Output_0", sizeof(float)*(22160), planner); // fp32 (1568) - Node 4 5
+    // planner_add("Convolution110_Output_0", sizeof(float)*(23728), planner); // fp32 (3136) - Node 5 6
+    // planner_add("Plus112_Output_0", sizeof(float)*(26864), planner); // fp32 (3136) - Node 6 7
+    // planner_add("ReLU114_Output_0", sizeof(float)*(30000), planner); // fp32 (3136) - Node 7 8
+    // planner_add("Pooling160_Output_0", sizeof(float)*(33136), planner); // fp32 (256) - Node 8 9 
+    // planner_add("Pooling160_Output_0_reshape0", sizeof(float)*(33392), planner); // fp32 (256) - 9 10
+    // planner_add("Times212_Output_0", sizeof(float)*(33648), planner); // fp32 (10) - Node 10 11
+    // planner_add("Plus214_Output_0", sizeof(float)*(33658), planner); // fp32 (10) - Node 11
 
-    struct onnx_tensor_t * img = onnx_tensor_alloc_from_file("./scratch/input_0.pb");
+    ctx = uonnx_init(NULL, mnist_onnx, sizeof(mnist_onnx), (void *)input_3, sizeof(input_3), "Input3", (void *)output_buf, sizeof(output_buf), "Plus214_Output_0", planner);
 
-    ctx = onnx_context_alloc_from_file("./scratch/model.onnx", NULL, 0);
-
-
-    if(ctx)
+    int i = 1, j = 0;
+    while(i--)
     {
-        // onnx_context_dump(ctx, 0);
-
-        input = onnx_tensor_search(ctx, "Input3");
-		test = onnx_tensor_search(ctx, "Convolution28_Output_0");
-		output = onnx_tensor_search(ctx, "Plus214_Output_0");
-
-		printf("%d %d\n\n", output->dims[0], output->dims[1]);
-
-		// onnx_tensor_apply(input, (void *)input_3, sizeof(input_3));
-		onnx_tensor_apply(input, img->datas, img->ndata * onnx_tensor_type_sizeof(img->type));
-        // onnx_tensor_dump(input, 1);
-		onnx_run(ctx);
-
-		// onnx_tensor_dump(test,1);
-
-        onnx_tensor_dump(output, 1);
-
-        onnx_context_free(ctx);
+        uonnx_run(ctx);
+        for(j = 0; j < 10; j++)
+            printf("%f ", output_buf[j]);
     }
 
-    
+    printf("\n");
+
+    uonnx_free(ctx);
 
     return 0;
 }
+
+// FFD per node_io. DONT USE: Problems with overlapping inputs and outputs for MatMul.c
+// planner = planner_init(13, sizeof(float)*(2560+6272+100), 21);
+// planner_add("Parameter193_reshape1", 0, planner); // fp32 (2560) - Node 0 10
+// planner_add("Input3", sizeof(float)*(2560), planner); // fp32 (784) - Node 1
+// planner_add("Convolution28_Output_0", sizeof(float)*(2560), planner); // fp32 (6272) - Node 1 2 
+// planner_add("Plus30_Output_0", sizeof(float)*(2560), planner); // fp32 (6272) - Node 2 3 
+// planner_add("ReLU32_Output_0", sizeof(float)*(2560), planner); // fp32 (6272) - Node 3 4
+// planner_add("Pooling66_Output_0", sizeof(float)*(2560), planner); // fp32 (1568) - Node 4 5
+// planner_add("Convolution110_Output_0", sizeof(float)*(2560), planner); // fp32 (3136) - Node 5 6
+// planner_add("Plus112_Output_0", sizeof(float)*(2560), planner); // fp32 (3136) - Node 6 7
+// planner_add("ReLU114_Output_0", sizeof(float)*(2560), planner); // fp32 (3136) - Node 7 8
+// planner_add("Pooling160_Output_0", sizeof(float)*(2560), planner); // fp32 (256) - Node 8 9 
+// planner_add("Pooling160_Output_0_reshape0", sizeof(float)*(2560), planner); // fp32 (256) - 9 10
+// planner_add("Times212_Output_0", sizeof(float)*(0), planner); // fp32 (10) - Node 10 11
+// planner_add("Plus214_Output_0", sizeof(float)*(0), planner); // fp32 (10) - Node 11

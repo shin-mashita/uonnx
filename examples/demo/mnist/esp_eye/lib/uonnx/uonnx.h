@@ -1,10 +1,6 @@
 #ifndef __UONNX_H__
 #define __UONNX_H__
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 /* UONNX DEFINES HERE */
 #define UONNX_OPS_ABS
 #define UONNX_OPS_ADD
@@ -38,8 +34,5 @@ Context * uonnx_init(   const char * filename,
 void uonnx_run(Context * context);
 void uonnx_free(Context * context);
 
-#ifdef __cplusplus
-}
-#endif
 
 #endif

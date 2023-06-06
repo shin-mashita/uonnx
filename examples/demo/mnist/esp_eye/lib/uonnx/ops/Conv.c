@@ -645,7 +645,6 @@ static void Conv_float32(Node * n)
 		matw = malloc(MM * H * W * C * sizeof(float));
 		matx = malloc(oH * oW * H * W * C * sizeof(float));
 		maty = malloc(oH * oW * MM * sizeof(float));
-		// printf("Conv total alloc in B: %lu\n",MM * H * W * C * sizeof(float) + oH * oW * H * W * C * sizeof(float) + oH * oW * MM * sizeof(float));
 		if (matw && matx && maty)
 		{
 			conv_mode = CONV_IM2COL;

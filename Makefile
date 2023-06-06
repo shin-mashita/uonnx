@@ -61,7 +61,8 @@ $(LIBPATH):$(COBJS)
 # Rule for making apps
 run: $(COBJS) $(APPOBJS)
 	@echo [LD] Linking $(APP)
-	$(CC) -o $(BUILDDIR)/$(APP).out $(OBJS) $(CFLAGS) $(INCDIRS) $(LIBS) -static
+	@$(CC) -o $(BUILDDIR)/$(APP).out $(OBJS) $(CFLAGS) $(INCDIRS) $(LIBS) 
+# -static
 	@echo
 	@echo [MK] App executable found at $(BUILDDIR)/$(APP).out
 	@echo
@@ -71,7 +72,7 @@ run_with_lib: lib $(APPOBJS)
 	@echo [LD] Linking $(APP)
 	@$(CC) -static -o $(BUILDDIR)/$(APP).out $(LIBFLAGS) $(APPOBJS) -luonnx $(LIBS)
 	@echo
-	@echo [MK] App executable found at $(BUILDDIR)/$(APP).out
+	@echo [MK] App executable found at $(BUILDDIR)/$(APP).out 
 	@echo
 
 # Rule for cleaning ./build
