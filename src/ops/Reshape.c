@@ -9,6 +9,7 @@ static int Reshape_init(Node * n)
 	{
 		x = n->inputs[0];
 		s = n->inputs[1];
+		
 		if((x->ndim == 0) || (x->type == TENSOR_TYPE_UNDEFINED))
 			return 0;
 		if((s->ndim == 0) || (s->type != TENSOR_TYPE_INT64))

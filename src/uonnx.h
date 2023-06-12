@@ -14,6 +14,7 @@ extern "C" {
 /* CORES */
 #include "uonnx_config.h"
 #include "proto/onnx.proto3.pb-c.h"
+#include "proto/planner.proto3.pb-c.h"
 #include "uonnx_dtypes.h"
 
 #include "uonnx_planner.h"

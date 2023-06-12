@@ -13,6 +13,9 @@ typedef Onnx__TensorProto TensorProto;
 typedef Onnx__NodeProto NodeProto;
 typedef Onnx__ValueInfoProto ValueInfoProto;
 
+typedef Planner__Planner PlannerProto;
+typedef Planner__Plan PlanProto;
+
 typedef struct Tensor Tensor;
 typedef struct Node Node;
 
@@ -75,12 +78,12 @@ typedef struct Graph
 
 typedef struct TensorArena //TODO: Define in separate C module
 {
-	// Tensor ** ptensors;
-	// int n_ptensors;
 	Tensor ** tensors;
 	int n_tensors;
 	void * datas;
 	size_t n_bytes;
+
+	int MAX_TENSORS;
 } TensorArena;
 
 typedef struct Plan

@@ -1,0 +1,23 @@
+syntax = "proto3";
+
+package planner;
+
+message Plan {
+    string name = 1;
+    int32 start_idx = 2;
+    int32 size = 3;
+    int32 type = 4;
+    int32 ndata = 5;
+    repeated int32 dims = 6;
+}
+
+message Planner {
+
+    message ArenaProfile {
+        int32 max_ntensors = 1;
+        int32 max_bytes = 2;
+    }
+
+    ArenaProfile arena = 1;
+    repeated Plan plans = 2;
+}

@@ -1,5 +1,40 @@
 #include "uonnx_planner.h"
 
+PlannerProto * load_planner(const char * filename)
+{
+    Planner__Planner * planner = NULL;
+    FILE * fp;
+	void * buf;
+	size_t l, len;
+
+    fp = fopen(filename, "rb");
+
+    if(fp)
+    {
+        fseek(fp, 0L, SEEK_END);
+		l = ftell(fp);
+		fseek(fp, 0L, SEEK_SET);
+		if(l > 0)
+        {
+            buf = malloc(l);
+            if(buf)
+            {
+                for(len = 0; len < l; len += fread(buf + len, 1, l - len, fp));
+                planner = planner__planner__unpack(NULL, len, buf);
+                free(buf);
+            }
+        }
+        fclose(fp);
+    }
+
+    return planner;
+}
+
+void free_plannerproto(PlannerProto * planner)
+{
+    planner__planner__free_unpacked(planner, NULL);
+}
+
 static inline Plan *plan_create(char *tensor_name, size_t idx)
 {
     Plan *p = (Plan *)malloc(sizeof(Plan));
@@ -90,6 +125,7 @@ void planner_add(char *tensor_name, size_t idx, Planner *planner)
     {
         if (planner->plans[i]->tensor_name == NULL)
         {
+            printf("%s\n", tensor_name);
             planner->plans[i]->tensor_name = strdup(tensor_name);
             planner->plans[i]->index = idx;
 
@@ -267,27 +303,42 @@ static inline int inMemBlks(char * name, MemBlk * memblks, int nblks)
     return 0;
 }
 
-// static inline void viewMemBlks(MemBlk * memblks, int nblks)
-// {
-//     int i = 0;
+static inline void viewMemBlks(MemBlk * memblks, int nblks)
+{
+    int i = 0;
     
-//     for(i = 0; i < nblks; i++)
-//     {
-//         printf("    Memblk %s from %d to %d\n", memblks[i].name, memblks[i].begin, memblks[i].end);
-//     }
-// }
+    for(i = 0; i < nblks; i++)
+    {
+        printf("    Memblk %s from %d to %d\n", memblks[i].name, memblks[i].begin, memblks[i].end);
+    }
+}
+
+static inline int get_n_plans(GraphProto * gproto)
+{
+    int n_plans = 0, i = 0, j = 0;
+
+    for(i = 0; i < gproto->n_node; i++)
+    {
+        for(j = 0; j < gproto->node[i]->n_input; j++)
+        {
+            if(!isInitializer(gproto->node[i]->input[j], gproto)) n_plans++;
+        }
+    }
+    return n_plans + gproto->n_output;
+}
 
 Planner * planner_init_from_proto(GraphProto * gproto)
 {
-    // Initialize values
+    // Initialize value
     int i = 0, j = 0;
-    int n_plans = gproto->n_input + gproto->n_output + gproto->n_value_info - gproto->n_initializer;
+    int n_plans = get_n_plans(gproto);
     char ** seq = malloc(sizeof(char*)*n_plans);
     int nseq = 0;
 
     MemBlk * memblks = malloc(sizeof(MemBlk)*n_plans);
-    char ** to_plan_names = malloc(sizeof(char*)*n_plans);
-    size_t * to_plan_addridx = malloc(sizeof(size_t)*n_plans);
+    char * to_plan_names[n_plans];
+    size_t to_plan_addridx[n_plans];
+
     int n_toplan = 0;
     int max_bytes = 0;
 
@@ -303,8 +354,28 @@ Planner * planner_init_from_proto(GraphProto * gproto)
     size_t blk_size = 0;
     int blk_idx = 0;
 
+    printf("n_plans %d\n", n_plans);
+
+    /**SCRATCH*/
+
+    // for(i = 0; i < gproto->n_node; i++)
+    // {
+    //     printf("NODE %d: %s\n", i, gproto->node[i]->name);
+    //     for(j = 0; j < gproto->node[i]->n_input; j++)
+    //     {
+    //         if(isInitializer(gproto->node[i]->input[j], gproto)) printf("   [INIT] %s\n", gproto->node[i]->input[j]);
+    //         else printf("   %s \n", gproto->node[i]->input[j]);
+    //     }
+    // }
+
+    // printf("%s\n", gproto->value_info[0]->name);
+    /**END SCRATCH*/
+
+    printf("%d\n", gproto->n_node);
+
     for(i = 0; i < gproto->n_node; i++)
     {
+        printf("Node %d\n", i);
         // Add all non-initializers not assigned with addresses (not in memblks)
         for(j = 0; j < gproto->node[i]->n_input; j++)
         {
@@ -328,6 +399,7 @@ Planner * planner_init_from_proto(GraphProto * gproto)
         planner_sort(seq, nseq, gproto);
 
         // Assign non-initializer tensors with addresses
+
         for(j = 0; j < nseq; j++)
         {
             blk_size = get_size_from_name(seq[j], gproto);
@@ -339,6 +411,7 @@ Planner * planner_init_from_proto(GraphProto * gproto)
 
             if(memblks[blk_idx].end > max_bytes) max_bytes = memblks[blk_idx].end;
 
+            printf("%d: \"%s\"\n",n_toplan, memblks[blk_idx].name);
             to_plan_names[n_toplan] = memblks[blk_idx].name;
             to_plan_addridx[n_toplan] = memblks[blk_idx].begin;
             n_toplan++;
@@ -366,8 +439,8 @@ Planner * planner_init_from_proto(GraphProto * gproto)
         planner_add(to_plan_names[i], to_plan_addridx[i], planner);
     }
 
-    free(to_plan_addridx);
-    free(to_plan_names);
+    // free(to_plan_addridx);
+    // free(to_plan_names);
     free(memblks);
     free(seq);
 

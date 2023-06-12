@@ -7,6 +7,10 @@ extern "C" {
 
 #include <uonnx.h>
 
+
+PlannerProto * load_planner(const char * filename);
+void free_plannerproto(PlannerProto * planner);
+
 /**
  * @brief Initialize a memory planner
  * 

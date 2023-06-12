@@ -7,6 +7,7 @@ extern "C" {
 
 #include <uonnx.h>
 
+Tensor * arena_init_v2(const int MAX_TENSORS, const size_t MAX_BYTES);
 /**
  * @brief Initialize buffer for tensors.
  * 

@@ -7,6 +7,12 @@ extern "C" {
 
 #include <uonnx.h>
 
+Tensor * tensor_alloc_nodatas(const char * name, TensorType type, int * dims, int ndim, uint8_t isInitializer);
+void arena_add_tensor(Tensor * tensor, TensorArena * arena, int arena_pos);
+void arena_add_initializer(TensorProto * initializer, TensorArena * arena);
+void arena_add_intermediate(PlanProto * plan, TensorArena * arena);
+Graph * graph_init_from_PlannerProto(GraphProto * gproto, ModelProto * model, PlannerProto * planner, TensorArena * arena);
+
 /**
  * @brief Add/initialize tensor in arena
  * 
@@ -73,7 +79,7 @@ void tensor_apply(void * datas, size_t size, Tensor * t);
  * @param planner Memory planner
  * @return Graph* 
  */
-Graph * graph_init(GraphProto * gproto, ModelProto * model, TensorArena * arena, Planner * planner); // WIP
+Graph * graph_init(GraphProto * gproto, ModelProto * model, TensorArena * arena, Planner * planner);
 
 /**
  * @brief Free memory allocated from Graph

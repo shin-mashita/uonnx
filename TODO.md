@@ -7,3 +7,13 @@
 
 ## uONNX Resolver
 - [ ] Macros for conditional compilation of operators
+
+uONNX
+MNIST - 122704 B
+KWS - 230896 B 
+VWW - ?
+
+LIBONNX
+MNIST - ?
+KWS - ?
+VWW - ?

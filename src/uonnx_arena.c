@@ -1,5 +1,38 @@
 #include "uonnx_arena.h"
 
+Tensor * arena_init_v2(const int MAX_TENSORS, const size_t MAX_BYTES)
+{
+    int i = 0, j = 0;
+    TensorArena * arena = (TensorArena *)malloc(sizeof(TensorArena));
+
+    if(!arena)
+        return NULL;
+
+    memset(arena, 0, sizeof(TensorArena));
+
+    arena->tensors = (Tensor **)malloc(sizeof(Tensor *)*MAX_TENSORS);
+    arena->datas = malloc(MAX_BYTES);
+    if(!arena->tensors || !arena->datas)
+    {
+        if(arena->tensors)
+            free(arena->tensors);
+        if(arena->datas)
+            free(arena->datas);
+        free(arena);
+        return NULL;
+    }
+
+    memset(arena->datas, 0, MAX_BYTES);
+
+    arena->n_bytes = MAX_BYTES;
+    arena->n_tensors = 0;
+    arena->MAX_TENSORS = MAX_TENSORS;
+
+    return arena;
+}
+
+// free_arena_v2
+
 TensorArena * arena_init(const int MAX_TENSORS, const size_t MAX_BYTES)
 {
     int i = 0, j = 0;
