@@ -1,7 +1,7 @@
 #include <uonnx.h>
 #include "kws_float32_9_onnx.h"
 
-#define UONNX_ON_BREAKDOWN
+// #define UONNX_ON_BREAKDOWN
 
 static int get_current_mem()
 {
