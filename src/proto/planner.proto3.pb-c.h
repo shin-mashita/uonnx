@@ -4,7 +4,8 @@
 #ifndef PROTOBUF_C_planner_2eproto3__INCLUDED
 #define PROTOBUF_C_planner_2eproto3__INCLUDED
 
-#include <protobuf-c/protobuf-c.h>
+// #include <protobuf-c/protobuf-c.h>
+#include "protobuf-c.h"
 
 PROTOBUF_C__BEGIN_DECLS
 
