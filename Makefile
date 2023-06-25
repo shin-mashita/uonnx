@@ -30,8 +30,10 @@ SRCS		+= $(OPS)
 COBJS		:= $(foreach file, $(SRCS:.c=.o), $(subst ./, ./build/, $(file)))
 OBJS		:= $(COBJS) $(APPOBJS)
 
+MODEL		?= examples/benchmarks/cpu/mnist/mnist.onnx
+PLANNER		?= 
 
-.PHONY: all lib run run_with_lib clean test make_test test_scratch
+.PHONY: all lib run benchmark run_with_lib clean test make_test test_scratch
 
 all: clean lib
 
@@ -66,6 +68,43 @@ run: $(COBJS) $(APPOBJS)
 	@echo
 	@echo [MK] App executable found at $(BUILDDIR)/$(APP).out
 	@echo
+
+$(eval mnist:;@:)
+$(eval kws:;@:)
+$(eval vww:;@:)
+
+benchmark:
+ifeq (mnist, $(filter mnist,$(MAKECMDGOALS)))
+	@clear
+	@echo [MK] Compiling mnist benchmark...
+	@make run APP=examples/benchmarks/cpu/mnist
+	@echo [MK] Running mnist benchmark on CPU...
+	@./build/examples/benchmarks/cpu/mnist.out
+else ifeq (kws, $(filter kws,$(MAKECMDGOALS)))
+	@clear
+	@echo [MK] Compiling kws benchmark...
+	@make run APP=examples/benchmarks/cpu/kws
+	@echo [MK] Running kws benchmark on CPU...
+	@./build/examples/benchmarks/cpu/kws.out
+else ifeq (vww, $(filter vww,$(MAKECMDGOALS)))
+	@clear
+	@echo [MK] Compiling vww benchmark...
+	@make run APP=examples/benchmarks/cpu/vww
+	@echo [MK] Running vww benchmark on CPU...
+	@./build/examples/benchmarks/cpu/vww.out
+else
+	@clear
+	@echo [MK] Compiling mnist benchmark...
+	@make run APP=examples/benchmarks/cpu/mnist
+	@echo [MK] Running mnist benchmark on CPU...
+	@./build/examples/benchmarks/cpu/mnist.out
+endif
+
+header:
+	@echo "#ifndef __$(subst .,_,$(notdir $(shell echo $(MODEL) | tr a-z A-Z)))__"
+	@echo "#define __$(subst .,_,$(notdir $(shell echo $(MODEL) | tr a-z A-Z)))__"
+	@echo
+	@xxd -i $(MODEL)
 
 # Rule for linking app with lib
 run_with_lib: lib $(APPOBJS)

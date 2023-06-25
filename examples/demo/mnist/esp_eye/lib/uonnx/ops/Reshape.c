@@ -9,6 +9,7 @@ static int Reshape_init(Node * n)
 	{
 		x = n->inputs[0];
 		s = n->inputs[1];
+		
 		if((x->ndim == 0) || (x->type == TENSOR_TYPE_UNDEFINED))
 			return 0;
 		if((s->ndim == 0) || (s->type != TENSOR_TYPE_INT64))
@@ -104,7 +105,7 @@ void resolver_default_op_Reshape(Node * n)
 			n->init = Reshape_init;
 			n->exit = Reshape_exit;
 			n->reshape = Reshape_reshape;
-			n->operator = Reshape_operator;
+			n->op = Reshape_operator;
 			break;
 		default:
 			break;
@@ -133,7 +134,7 @@ void resolver_default_op_Reshape(Node * n)
 			n->init = Reshape_init;
 			n->exit = Reshape_exit;
 			n->reshape = Reshape_reshape;
-			n->operator = Reshape_operator;
+			n->op = Reshape_operator;
 			break;
 		default:
 			break;
@@ -161,7 +162,7 @@ void resolver_default_op_Reshape(Node * n)
 			n->init = Reshape_init;
 			n->exit = Reshape_exit;
 			n->reshape = Reshape_reshape;
-			n->operator = Reshape_operator;
+			n->op = Reshape_operator;
 			break;
 		default:
 			break;

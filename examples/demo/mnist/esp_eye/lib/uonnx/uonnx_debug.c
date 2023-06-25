@@ -1,5 +1,5 @@
 #include "uonnx_debug.h"
-
+ 
 void addrcmp(void *ptr1, void *ptr2)
 {
     if (ptr1 == ptr2)
@@ -9,6 +9,35 @@ void addrcmp(void *ptr1, void *ptr2)
     else
     {
         printf("Different addresses: addr1 = %p, addr2 = %p \n", ptr1, ptr2);
+    }
+}
+
+void get_cpu_heap(const char * TAG)
+{
+   struct mallinfo info;
+   memset(&info,0,sizeof(struct mallinfo));
+   info = mallinfo();
+   printf("CPU Heap at [%s]: uordblks: %d | hblkhd: %d | total: \n", TAG, info.uordblks, info.hblkhd, info.uordblks + info.hblkhd);
+}
+
+void dump_plannerproto(PlannerProto * planner)
+{
+    int i = 0, j = 0;
+
+    printf("Arena max tensors: %d\n", planner->arena->max_ntensors);
+    printf("Arena max bytes: %d\n", planner->arena->max_bytes);
+    
+    for(i = 0; i < planner->n_plans; i++)
+    {
+        printf("Planner: %x\n", planner->plans[i]->id);
+        printf("\tstart_idx: %d\n", planner->plans[i]->start_idx);
+        printf("\tndims: %d\n", planner->plans[i]->n_dims);
+        printf("\tdims: ");
+        for(j = 0; j < planner->plans[i]->n_dims; j++)
+        {
+            printf("%d ", planner->plans[i]->dims[j]);
+        }
+        printf("\n");
     }
 }
 
@@ -85,13 +114,13 @@ void dump_tensor(Tensor *t)
 {
     int i;
 
-    if (!t || t->name == NULL)
+    if (!t)
     {
         printf("Tensor is null.\n");
         return;
     }
 
-    printf("Tensor: \"%s\"\n", t->name);
+    printf("Tensor: \"%x\"\n", t->id);
     printf("\tdtype: %s\n", TensorType2String(t->type));
     printf("\tndata: %d\n", t->ndata);
     printf("\tdatas: ");

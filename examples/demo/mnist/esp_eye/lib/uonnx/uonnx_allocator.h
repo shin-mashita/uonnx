@@ -1,12 +1,43 @@
+#ifndef __UONNX_ALLOCATOR_H__
+#define __UONNX_ALLOCATOR_H__
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #include <uonnx.h>
 
-Tensor * tensor_init(const char *name, TensorType type, int *dims, int ndim, TensorArena *arena, Tensor * tensor, int data_idx);
-Tensor * tensor_init_from_value_info(ValueInfoProto * v, TensorArena * arena, Tensor * tensor, int data_idx);
-Tensor * tensor_init_from_proto(TensorProto * tp, Tensor * tensor);
+Tensor * tensor_alloc_nodatas(uint32_t tensor_id, TensorType type, int * dims, int ndim, uint8_t isInitializer);
+void arena_add_tensor(Tensor * tensor, TensorArena * arena, int arena_pos);
+void arena_add_initializer(TensorProto * initializer, TensorArena * arena);
+void arena_add_intermediate(PlanProto * plan, TensorArena * arena);
+Graph * graph_init_from_PlannerProto(ModelProto * model, PlannerProto * planner, TensorArena * arena);
 
-void free_tensor(Tensor * t);
+/**
+ * @brief Remove Tensor object from arena
+ * 
+ * @param t Tensor to free
+ */
 void free_tensor_from_arena(Tensor * t);
+
+/**
+ * @brief Set values in Tensor
+ * 
+ * @param datas source datas to assign
+ * @param size size of datas
+ * @param t dest tensor
+ */
 void tensor_apply(void * datas, size_t size, Tensor * t);
 
-Graph * graph_init(GraphProto * gproto, ModelProto * model, TensorArena * arena, Planner * planner); // WIP
+/**
+ * @brief Free memory allocated from Graph
+ * 
+ * @param g Graph to free
+ */
 void free_graph(Graph * g); 
+
+#ifdef __cplusplus
+}
+#endif
+
+#endif

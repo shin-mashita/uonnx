@@ -645,6 +645,7 @@ static void Conv_float32(Node * n)
 		matw = malloc(MM * H * W * C * sizeof(float));
 		matx = malloc(oH * oW * H * W * C * sizeof(float));
 		maty = malloc(oH * oW * MM * sizeof(float));
+		// printf("Conv total alloc in B: %lu\n",MM * H * W * C * sizeof(float) + oH * oW * H * W * C * sizeof(float) + oH * oW * MM * sizeof(float));
 		if (matw && matx && maty)
 		{
 			conv_mode = CONV_IM2COL;
@@ -1170,19 +1171,19 @@ void resolver_default_op_Conv(Node * n)
 			n->init = Conv_init;
 			n->exit = Conv_exit;
 			n->reshape = Conv_reshape;
-			n->operator = Conv_float16;
+			n->op = Conv_float16;
 			break;
 		case TENSOR_TYPE_FLOAT32:
 			n->init = Conv_init;
 			n->exit = Conv_exit;
 			n->reshape = Conv_reshape;
-			n->operator = Conv_float32;
+			n->op = Conv_float32;
 			break;
 		case TENSOR_TYPE_FLOAT64:
 			n->init = Conv_init;
 			n->exit = Conv_exit;
 			n->reshape = Conv_reshape;
-			n->operator = Conv_float64;
+			n->op = Conv_float64;
 			break;
 		default:
 			break;
@@ -1196,19 +1197,19 @@ void resolver_default_op_Conv(Node * n)
 			n->init = Conv_init;
 			n->exit = Conv_exit;
 			n->reshape = Conv_reshape;
-			n->operator = Conv_float16;
+			n->op = Conv_float16;
 			break;
 		case TENSOR_TYPE_FLOAT32:
 			n->init = Conv_init;
 			n->exit = Conv_exit;
 			n->reshape = Conv_reshape;
-			n->operator = Conv_float32;
+			n->op = Conv_float32;
 			break;
 		case TENSOR_TYPE_FLOAT64:
 			n->init = Conv_init;
 			n->exit = Conv_exit;
 			n->reshape = Conv_reshape;
-			n->operator = Conv_float64;
+			n->op = Conv_float64;
 			break;
 		default:
 			break;

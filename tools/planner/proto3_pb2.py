@@ -19,7 +19,7 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   package='planner',
   syntax='proto3',
   serialized_options=None,
-  serialized_pb=_b('\n\x0eplanner.proto3\x12\x07planner\"`\n\x04Plan\x12\x0c\n\x04name\x18\x01 \x01(\t\x12\x11\n\tstart_idx\x18\x02 \x01(\x05\x12\x0c\n\x04size\x18\x03 \x01(\x05\x12\x0c\n\x04type\x18\x04 \x01(\x05\x12\r\n\x05ndata\x18\x05 \x01(\x05\x12\x0c\n\x04\x64ims\x18\x06 \x03(\x05\"\x8e\x01\n\x07Planner\x12,\n\x05\x61rena\x18\x01 \x01(\x0b\x32\x1d.planner.Planner.ArenaProfile\x12\x1c\n\x05plans\x18\x02 \x03(\x0b\x32\r.planner.Plan\x1a\x37\n\x0c\x41renaProfile\x12\x14\n\x0cmax_ntensors\x18\x01 \x01(\x05\x12\x11\n\tmax_bytes\x18\x02 \x01(\x05\x62\x06proto3')
+  serialized_pb=_b('\n\x0eplanner.proto3\x12\x07planner\"A\n\x04Plan\x12\n\n\x02id\x18\x01 \x01(\r\x12\x11\n\tstart_idx\x18\x02 \x01(\x05\x12\x0c\n\x04type\x18\x03 \x01(\x05\x12\x0c\n\x04\x64ims\x18\x04 \x03(\x05\"\x8e\x01\n\x07Planner\x12,\n\x05\x61rena\x18\x01 \x01(\x0b\x32\x1d.planner.Planner.ArenaProfile\x12\x1c\n\x05plans\x18\x02 \x03(\x0b\x32\r.planner.Plan\x1a\x37\n\x0c\x41renaProfile\x12\x14\n\x0cmax_ntensors\x18\x01 \x01(\x05\x12\x11\n\tmax_bytes\x18\x02 \x01(\x05\x62\x06proto3')
 )
 
 
@@ -33,9 +33,9 @@ _PLAN = _descriptor.Descriptor(
   containing_type=None,
   fields=[
     _descriptor.FieldDescriptor(
-      name='name', full_name='planner.Plan.name', index=0,
-      number=1, type=9, cpp_type=9, label=1,
-      has_default_value=False, default_value=_b("").decode('utf-8'),
+      name='id', full_name='planner.Plan.id', index=0,
+      number=1, type=13, cpp_type=3, label=1,
+      has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR),
@@ -47,29 +47,15 @@ _PLAN = _descriptor.Descriptor(
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
-      name='size', full_name='planner.Plan.size', index=2,
+      name='type', full_name='planner.Plan.type', index=2,
       number=3, type=5, cpp_type=1, label=1,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
-      name='type', full_name='planner.Plan.type', index=3,
-      number=4, type=5, cpp_type=1, label=1,
-      has_default_value=False, default_value=0,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR),
-    _descriptor.FieldDescriptor(
-      name='ndata', full_name='planner.Plan.ndata', index=4,
-      number=5, type=5, cpp_type=1, label=1,
-      has_default_value=False, default_value=0,
-      message_type=None, enum_type=None, containing_type=None,
-      is_extension=False, extension_scope=None,
-      serialized_options=None, file=DESCRIPTOR),
-    _descriptor.FieldDescriptor(
-      name='dims', full_name='planner.Plan.dims', index=5,
-      number=6, type=5, cpp_type=1, label=3,
+      name='dims', full_name='planner.Plan.dims', index=3,
+      number=4, type=5, cpp_type=1, label=3,
       has_default_value=False, default_value=[],
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
@@ -87,7 +73,7 @@ _PLAN = _descriptor.Descriptor(
   oneofs=[
   ],
   serialized_start=27,
-  serialized_end=123,
+  serialized_end=92,
 )
 
 
@@ -124,8 +110,8 @@ _PLANNER_ARENAPROFILE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=213,
-  serialized_end=268,
+  serialized_start=182,
+  serialized_end=237,
 )
 
 _PLANNER = _descriptor.Descriptor(
@@ -161,8 +147,8 @@ _PLANNER = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=126,
-  serialized_end=268,
+  serialized_start=95,
+  serialized_end=237,
 )
 
 _PLANNER_ARENAPROFILE.containing_type = _PLANNER

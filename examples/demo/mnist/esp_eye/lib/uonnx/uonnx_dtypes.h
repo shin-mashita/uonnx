@@ -1,6 +1,10 @@
 #ifndef __UONNX_DTYPES_H__
 #define __UONNX_DTYPES_H__
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #include <uonnx.h>
 
 typedef Onnx__ModelProto ModelProto;
@@ -8,6 +12,9 @@ typedef Onnx__GraphProto GraphProto;
 typedef Onnx__TensorProto TensorProto;
 typedef Onnx__NodeProto NodeProto;
 typedef Onnx__ValueInfoProto ValueInfoProto;
+
+typedef Planner__Planner PlannerProto;
+typedef Planner__Plan PlanProto;
 
 typedef struct Tensor Tensor;
 typedef struct Node Node;
@@ -36,6 +43,7 @@ typedef enum TensorType
 typedef struct Tensor
 {
     char * name;
+	uint32_t id; 
     TensorType type;
 	int * strides;
     void * datas;
@@ -58,7 +66,7 @@ typedef struct Node
 	int (*init)(Node * n);
 	int (*exit)(Node * n);
 	int (*reshape)(Node * n);
-	void (*operator)(Node * n);
+	void (*op)(Node * n);
 	void * priv;
 
 } Node;
@@ -71,12 +79,12 @@ typedef struct Graph
 
 typedef struct TensorArena //TODO: Define in separate C module
 {
-	// Tensor ** ptensors;
-	// int n_ptensors;
 	Tensor ** tensors;
 	int n_tensors;
 	void * datas;
 	size_t n_bytes;
+
+	int MAX_TENSORS;
 } TensorArena;
 
 typedef struct Plan
@@ -98,16 +106,21 @@ typedef struct Context
     ModelProto * model;
     Graph * graph;
 	TensorArena * arena;
-	Planner * planner;
+	PlannerProto * planner;
 
-	void * input_buf; 
-	size_t input_len;
-	Tensor * input_tensor;
+	// void * input_buf; 
+	// size_t input_len;
+	// Tensor * input_tensor;
 
-	void * output_buf; 
-	size_t output_len;
-	Tensor * output_tensor;
+	// void * output_buf; 
+	// size_t output_len;
+	// Tensor * output_tensor;
 	
 } Context;
+
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif

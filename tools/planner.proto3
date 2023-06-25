@@ -3,12 +3,10 @@ syntax = "proto3";
 package planner;
 
 message Plan {
-    string name = 1;
+    uint32 id = 1;
     int32 start_idx = 2;
-    int32 size = 3;
-    int32 type = 4;
-    int32 ndata = 5;
-    repeated int32 dims = 6;
+    int32 type = 3;
+    repeated int32 dims = 4;
 }
 
 message Planner {

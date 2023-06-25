@@ -2,10 +2,7 @@ from planner.proto3_pb2 import Planner
 import onnx
 import numpy as np
 
-# todo onnx proto parser
-# todo algo for FFD given onnx model proto
-
-test_dict = {
+test_planner = {
     "arena": {
         "max_ntensors": 1,
         "max_bytes": 2,
@@ -22,8 +19,33 @@ test_dict = {
     },
 }
 
+def __shash(s: str)->int:
+    mod = 5381
+    mask = 0xFFFFFFFF
+    for c in s:
+        mod = (mod << 5) + mod + ord(c)
 
-def tensortype_sizeof(type):
+    mod = mod & mask
+
+    print(hex(mod))
+
+    return mod
+
+def __check_unique_shashes(planner: Planner, model: onnx.ModelProto) -> bool:
+    mset  = set()
+    onnx
+    for plan in planner.plans:
+        mset.add(plan.id)
+    
+    for initializer in model.graph.initializer:
+        mset.add(__shash(initializer.name))
+    
+    if(len(mset) == planner.arena.max_ntensors):
+        return 1
+    return 0
+
+
+def __tensortype_sizeof(type):
     dtype_map = {
         0: 0,
         1: 4,
@@ -46,20 +68,19 @@ def tensortype_sizeof(type):
 
     return dtype_map[type]
 
-
-def parse_tensor_data_from_value_info(info) -> dict:
+def __parse_tensor_data_from_value_info(info) -> dict:
     plan = dict()
     plan["start_idx"] = -1
     plan["type"] = info.type.tensor_type.elem_type
     plan["dims"] = [max(d.dim_value, 1)
                     for d in info.type.tensor_type.shape.dim]
     plan["ndata"] = np.prod(plan["dims"])
-    plan["size"] = tensortype_sizeof(
+    plan["size"] = __tensortype_sizeof(
         info.type.tensor_type.elem_type)*plan["ndata"]
 
     return plan
 
-def get_tensor_death(tensor, model):
+def __get_tensor_death(tensor, model):
     for node_idx in range(len(model.graph.node)-1, -1, -1):
         node = model.graph.node[node_idx]
         for input in node.input:
@@ -71,13 +92,13 @@ def get_tensor_death(tensor, model):
     
     return -1
 
-def in_blocks(tensor, blocks):
+def __in_blocks(tensor, blocks):
     for name, _ , _ in blocks:
         if tensor == name:
             return 1
     return 0
 
-def get_first_available_pos(tensor_size, blocks):
+def __get_first_available_pos(tensor_size, blocks):
     blocks.sort(key=lambda x:x[1])
     pos = 0
     for _, start, size in blocks:
@@ -85,7 +106,8 @@ def get_first_available_pos(tensor_size, blocks):
             pos = start + size
     return pos
 
-def create_plannerdict(model_file) -> dict:
+
+def create_plannerproto(model_file:str) -> Planner:
     planner = dict()
 
     model = onnx.load(model_file)
@@ -105,15 +127,15 @@ def create_plannerdict(model_file) -> dict:
 
     for i in model.graph.input:
         if i.name not in initializers:
-            plans[i.name] = parse_tensor_data_from_value_info(i)
+            plans[i.name] = __parse_tensor_data_from_value_info(i)
 
     for i in model.graph.value_info:
         if i.name not in initializers:
-            plans[i.name] = parse_tensor_data_from_value_info(i)
+            plans[i.name] = __parse_tensor_data_from_value_info(i)
 
     for i in model.graph.output:
         if i.name not in initializers:
-            plans[i.name] = parse_tensor_data_from_value_info(i)
+            plans[i.name] = __parse_tensor_data_from_value_info(i)
 
     blocks = [] # [(name, start_idx, size)]
 
@@ -132,40 +154,40 @@ def create_plannerdict(model_file) -> dict:
         to_allocs.sort(key=lambda x:x[1], reverse=1)
 
         for name, size in to_allocs:
-            if not in_blocks(name, blocks):
-                plans[name]["start_idx"] = get_first_available_pos(size, blocks)
+            if not __in_blocks(name, blocks):
+                plans[name]["start_idx"] = __get_first_available_pos(size, blocks)
                 blocks.append((name, plans[name]["start_idx"], size))
 
         for name, start, size in blocks:
-            if node_idx >= get_tensor_death(name, model):
+            if node_idx >= __get_tensor_death(name, model):
                 blocks.remove((name, start, size))
 
     planner["arena"] = dict()
-    planner["arena"]["max_ntensors"] = len(plans.keys())
+    planner["arena"]["max_ntensors"] = len(plans.keys()) + len(model.graph.initializer)
     planner["arena"]["max_bytes"]  = max([val['start_idx'] + val['size'] for val in plans.values()])
 
     planner["plans"] = plans
-    return planner
 
-def planner_dict_to_proto(planner_dict):
-    planner = Planner()
+    proto = Planner()
 
-    planner.arena.max_ntensors = planner_dict["arena"]["max_ntensors"]
-    planner.arena.max_bytes = planner_dict["arena"]["max_bytes"]
+    proto.arena.max_ntensors = planner["arena"]["max_ntensors"]
+    proto.arena.max_bytes = planner["arena"]["max_bytes"]
 
-    for name, plan_dict in planner_dict["plans"].items():
-        plan = planner.plans.add()
-        plan.name = name
-        plan.start_idx = plan_dict["start_idx"]
-        plan.size = plan_dict["size"]
-        plan.type = plan_dict["type"]
-        plan.ndata = plan_dict["ndata"]
-        plan.dims.extend(plan_dict["dims"])
+    for name, plan_dict in planner["plans"].items():
+        planproto = proto.plans.add()
+        planproto.id = __shash(name)
+        planproto.start_idx = plan_dict["start_idx"]
+        planproto.type = plan_dict["type"]
+        planproto.dims.extend(plan_dict["dims"])
 
-    return planner
+    if(__check_unique_shashes(proto, model)):
+        return proto
+    else:
+        print("Collision occurred between tensor names hashes. Use another modulus.")
 
-def create_plannerproto(model_file, target=""):
-    planner = planner_dict_to_proto(create_plannerdict(model_file))
+
+def create_plannerproto_file(model_file: str, target:str=""):
+    planner = create_plannerproto(model_file)
 
     if target == "":
         target = model_file.rstrip(".onnx") + "_planner.pb"
@@ -173,7 +195,8 @@ def create_plannerproto(model_file, target=""):
     with open(target, "wb") as f:
         f.write(planner.SerializeToString())
 
-def read_pbfile(filename):
+
+def read_pbfile(filename: str):
     planner = Planner()
 
     with open(filename, "rb") as f:
@@ -186,17 +209,21 @@ def read_pbfile(filename):
     print(f"Plans:")
     for plan in planner.plans:
         mdims = []
-        print("\tPlan:", plan.name[0:min(len(plan.name), 20)])
+        print("\tPlan:", hex(plan.id))
         print("\t\tstart_idx:", plan.start_idx)
-        print("\t\tsize:", plan.size)
-        print("\t\tndata:", plan.ndata)
+        print("\t\ttype:", plan.type)
         for dim in plan.dims:
             mdims.append(dim)
         print("\t\tdims:", mdims)
-
+    
 
 # TODO PLANNER Viz
 
 if __name__ == "__main__":
-    create_plannerproto("model.onnx")
-    read_pbfile("model_planner.pb")
+    create_plannerproto_file("kws_float32_9.onnx")
+    read_pbfile("kws_float32_9_planner.pb")
+
+
+# MNIST: 505 B -> 248 B
+# KWS: 3.1 KB -> 445 B
+# VWW: 7.5 KB -> 1.1 KB

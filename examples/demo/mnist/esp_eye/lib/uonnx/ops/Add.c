@@ -235,73 +235,73 @@ void resolver_default_op_Add(Node * n)
 			n->init = Add_init;
 			n->exit = Add_exit;
 			n->reshape = Add_reshape;
-			n->operator = Add_int8;
+			n->op = Add_int8;
 			break;
 		case TENSOR_TYPE_INT16:
 			n->init = Add_init;
 			n->exit = Add_exit;
 			n->reshape = Add_reshape;
-			n->operator = Add_int16;
+			n->op = Add_int16;
 			break;
 		case TENSOR_TYPE_INT32:
 			n->init = Add_init;
 			n->exit = Add_exit;
 			n->reshape = Add_reshape;
-			n->operator = Add_int32;
+			n->op = Add_int32;
 			break;
 		case TENSOR_TYPE_INT64:
 			n->init = Add_init;
 			n->exit = Add_exit;
 			n->reshape = Add_reshape;
-			n->operator = Add_int64;
+			n->op = Add_int64;
 			break;
 		case TENSOR_TYPE_UINT8:
 			n->init = Add_init;
 			n->exit = Add_exit;
 			n->reshape = Add_reshape;
-			n->operator = Add_uint8;
+			n->op = Add_uint8;
 			break;
 		case TENSOR_TYPE_UINT16:
 			n->init = Add_init;
 			n->exit = Add_exit;
 			n->reshape = Add_reshape;
-			n->operator = Add_uint16;
+			n->op = Add_uint16;
 			break;
 		case TENSOR_TYPE_UINT32:
 			n->init = Add_init;
 			n->exit = Add_exit;
 			n->reshape = Add_reshape;
-			n->operator = Add_uint32;
+			n->op = Add_uint32;
 			break;
 		case TENSOR_TYPE_UINT64:
 			n->init = Add_init;
 			n->exit = Add_exit;
 			n->reshape = Add_reshape;
-			n->operator = Add_uint64;
+			n->op = Add_uint64;
 			break;
 		case TENSOR_TYPE_BFLOAT16:
 			n->init = Add_init;
 			n->exit = Add_exit;
 			n->reshape = Add_reshape;
-			n->operator = Add_13_bfloat16;
+			n->op = Add_13_bfloat16;
 			break;
 		case TENSOR_TYPE_FLOAT16:
 			n->init = Add_init;
 			n->exit = Add_exit;
 			n->reshape = Add_reshape;
-			n->operator = Add_float16;
+			n->op = Add_float16;
 			break;
 		case TENSOR_TYPE_FLOAT32:
 			n->init = Add_init;
 			n->exit = Add_exit;
 			n->reshape = Add_reshape;
-			n->operator = Add_float32;
+			n->op = Add_float32;
 			break;
 		case TENSOR_TYPE_FLOAT64:
 			n->init = Add_init;
 			n->exit = Add_exit;
 			n->reshape = Add_reshape;
-			n->operator = Add_float64;
+			n->op = Add_float64;
 			break;
 		default:
 			break;
@@ -315,49 +315,49 @@ void resolver_default_op_Add(Node * n)
 			n->init = Add_init;
 			n->exit = Add_exit;
 			n->reshape = Add_reshape;
-			n->operator = Add_int32;
+			n->op = Add_int32;
 			break;
 		case TENSOR_TYPE_INT64:
 			n->init = Add_init;
 			n->exit = Add_exit;
 			n->reshape = Add_reshape;
-			n->operator = Add_int64;
+			n->op = Add_int64;
 			break;
 		case TENSOR_TYPE_UINT32:
 			n->init = Add_init;
 			n->exit = Add_exit;
 			n->reshape = Add_reshape;
-			n->operator = Add_uint32;
+			n->op = Add_uint32;
 			break;
 		case TENSOR_TYPE_UINT64:
 			n->init = Add_init;
 			n->exit = Add_exit;
 			n->reshape = Add_reshape;
-			n->operator = Add_uint64;
+			n->op = Add_uint64;
 			break;
 		case TENSOR_TYPE_BFLOAT16:
 			n->init = Add_init;
 			n->exit = Add_exit;
 			n->reshape = Add_reshape;
-			n->operator = Add_13_bfloat16;
+			n->op = Add_13_bfloat16;
 			break;
 		case TENSOR_TYPE_FLOAT16:
 			n->init = Add_init;
 			n->exit = Add_exit;
 			n->reshape = Add_reshape;
-			n->operator = Add_float16;
+			n->op = Add_float16;
 			break;
 		case TENSOR_TYPE_FLOAT32:
 			n->init = Add_init;
 			n->exit = Add_exit;
 			n->reshape = Add_reshape;
-			n->operator = Add_float32;
+			n->op = Add_float32;
 			break;
 		case TENSOR_TYPE_FLOAT64:
 			n->init = Add_init;
 			n->exit = Add_exit;
 			n->reshape = Add_reshape;
-			n->operator = Add_float64;
+			n->op = Add_float64;
 			break;
 		default:
 			break;
@@ -371,43 +371,43 @@ void resolver_default_op_Add(Node * n)
 			n->init = Add_init;
 			n->exit = Add_exit;
 			n->reshape = Add_reshape;
-			n->operator = Add_int32;
+			n->op = Add_int32;
 			break;
 		case TENSOR_TYPE_INT64:
 			n->init = Add_init;
 			n->exit = Add_exit;
 			n->reshape = Add_reshape;
-			n->operator = Add_int64;
+			n->op = Add_int64;
 			break;
 		case TENSOR_TYPE_UINT32:
 			n->init = Add_init;
 			n->exit = Add_exit;
 			n->reshape = Add_reshape;
-			n->operator = Add_uint32;
+			n->op = Add_uint32;
 			break;
 		case TENSOR_TYPE_UINT64:
 			n->init = Add_init;
 			n->exit = Add_exit;
 			n->reshape = Add_reshape;
-			n->operator = Add_uint64;
+			n->op = Add_uint64;
 			break;
 		case TENSOR_TYPE_FLOAT16:
 			n->init = Add_init;
 			n->exit = Add_exit;
 			n->reshape = Add_reshape;
-			n->operator = Add_float16;
+			n->op = Add_float16;
 			break;
 		case TENSOR_TYPE_FLOAT32:
 			n->init = Add_init;
 			n->exit = Add_exit;
 			n->reshape = Add_reshape;
-			n->operator = Add_float32;
+			n->op = Add_float32;
 			break;
 		case TENSOR_TYPE_FLOAT64:
 			n->init = Add_init;
 			n->exit = Add_exit;
 			n->reshape = Add_reshape;
-			n->operator = Add_float64;
+			n->op = Add_float64;
 			break;
 		default:
 			break;

@@ -1,102 +1,69 @@
 #include <uonnx.h>
 
-Context * uonnx_init(   const char * filename, 
-                        const void * model_buf,
-                        size_t model_len,
-                        void * input_buf, 
-                        size_t input_len,
-                        char * input_name, 
-                        void * output_buf, 
-                        size_t output_len,
-                        char * output_name, 
-                        Planner * planner)
+Context * uonnx_init(const void * model_buf, size_t model_len, const void * planner_buf, size_t planner_len)
 {
-    if(!planner)
-    {
-        return NULL; // TODO: Add generate_planner_FFD here
-    }
-
-    Context * context = (Context *)malloc(sizeof(Context));
-    if(!context)
-        return NULL;
-
-    if(filename)
-    {
-        context->model = load_model(filename);
-    }
-    else if(model_buf && model_len > 0)
-    {
-        context->model = load_model_buf(model_buf, model_len);
-    }
-    else
-    {
-        free(context);
-        return NULL;
-    }
-
-    if(!context->model)
-    {
-        free(context);
-        return NULL;
-    }
-
-    context->arena = arena_init_from_planner(planner);
-    if(!context->arena)
-    {
-        free_model(context->model);
-        free(context);
-        return NULL;
-    }
-
-    context->graph = graph_init(context->model->graph, context->model, context->arena, planner);
-    if(!context->graph)
-    {
-        free_arena(context->arena);
-        free_model(context->model);
-        free(context);
-        return NULL;
-    }
-
-    context->input_buf = input_buf;
-    context->input_len = input_len;
-    context->input_tensor = tensor_search(context->arena, input_name);
-
-    context->output_buf = output_buf;
-    context->output_len = output_len;
-    context->output_tensor = tensor_search(context->arena, output_name);
-
-    context->planner = planner;
+    Context * ctx = (Context *)malloc(sizeof(Context));
     
-    return context;
+    if(!ctx)
+        return NULL;
+
+    ctx->model = load_model_buf(model_buf, model_len);
+    ctx->planner = load_planner_buf(planner_buf, planner_len);
+    
+    if(!ctx->model || !ctx->planner)
+    {
+        if(ctx->model)
+            free_model(ctx->model);
+        if(ctx->planner)
+            free_plannerproto(ctx->planner);
+        free(ctx);
+        return NULL;
+    }
+
+    ctx->arena = arena_init(ctx->planner->arena->max_ntensors, ctx->planner->arena->max_bytes);
+
+    if(!ctx->arena)
+    {
+        free_model(ctx->model);
+        free_plannerproto(ctx->planner);
+        free(ctx);
+        return NULL;
+    }
+
+    ctx->graph = graph_init_from_PlannerProto(ctx->model, ctx->planner, ctx->arena);
+    
+    if(!ctx->graph)
+    {
+        free_arena(ctx->arena);
+        free_model(ctx->model);
+        free_plannerproto(ctx->planner);
+        free(ctx);
+        return NULL;
+    }
+    
+    return ctx;
 }
 
-void uonnx_run(Context * context)
+void uonnx_run(Context * ctx)
 {
     Node * n;
     int i = 0;
-    Graph * g = context->graph;
 
-    tensor_apply((void*)(context->input_buf), context->input_len, context->input_tensor);
-    for(i = 0; i < g->nlen; i++)
+    for(i = 0; i < ctx->graph->nlen; i++)
     {
-        n = &g->nodes[i];
-        n->operator(n);
-    }
-
-    if(context->output_buf && context->output_len > 0)
-    {
-        memcpy(context->output_buf, context->output_tensor->datas, context->output_len);
+        n = &ctx->graph->nodes[i];
+        n->op(n);
     }
 }
 
-void uonnx_free(Context * context)
+void uonnx_free(Context * ctx)
 {
-    if(context)
+    if(ctx)
     {
-        free_graph(context->graph);
-        free_arena(context->arena);
-        free_model(context->model);
-        free_planner(context->planner);
-        free(context);
+        free_graph(ctx->graph);
+        free_arena(ctx->arena);
+        free_model(ctx->model);
+        free_plannerproto(ctx->planner);
+        free(ctx);
     }
 }

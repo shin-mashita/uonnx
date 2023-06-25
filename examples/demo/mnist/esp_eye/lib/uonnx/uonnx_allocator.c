@@ -1,86 +1,54 @@
 #include "uonnx_allocator.h"
 
-// MORE TODOs:
-// Add methods:
-//     arena_add = add tensor to arena
-//     tensor_malloc = init tensor by malloc-ing only. Use #define UONNX_NO_ARENA
+// Tensor * tensor_alloc //withdatas for no arena application
 
-/* 
- * TENSOR_INIT 
- * Initialize a tensor with datas memset'd to 0
- * If arena == NULL, malloc instead
- * Required params (name, type, dims , ndim)
- * Return address pointing to tensor
- */
-Tensor * tensor_init(   const char * name, 
-                        TensorType type, 
-                        int * dims,  // TODO: Check if function can accept int64_t for 32 bit MCUs
-                        int ndim, 
-                        TensorArena * arena, 
-                        Tensor * tensor, 
-                        int data_idx) // byte offset. REQUIRED for arenas: multiply by sizeof(dtype)
+Tensor * tensor_alloc_nodatas(/*const char * name*/uint32_t tensor_id, TensorType type, int * dims, int ndim, uint8_t isInitializer)
 {
-    int i = 0; size_t ndata = 1;
+    int i = 0;
+    size_t ndata = 1;
     Tensor * t;
-    
-    if(arena)
-    {
-        t = tensor;
-    }
-    else
-    {
-        t = malloc(sizeof(Tensor)); //TODO: Find way to free if arena == NULL
-    }
 
-    t->name = strdup(name);
-    if(!t->name)
+    t = malloc(sizeof(Tensor));
+    if(!t)
     {
-        if(!arena) free(t);
         return NULL;
     }
 
-    t->strides = malloc(sizeof(int)*ndim);
-    t->dims = malloc(sizeof(int)*ndim);
+    t->id = tensor_id;
+    t->isInitializer = isInitializer;
+    t->datas = NULL;
+    t->type = type;
+    t->ndim = ndim;
 
-    if((!t->strides)||(!t->dims))
+    if(!isInitializer)
     {
-        if(t->strides) free(t->strides);
-        if(t->dims) free(t->dims);
+        t->strides = malloc(sizeof(int)*ndim);
+        t->dims = malloc(sizeof(int) * ndim);
 
-        free(t->name);
-        if(!arena) free(t);
-        return NULL;
-    }
+        if((!t->strides)||(!t->dims))
+        {
+            if(t->strides)
+                free(t->strides);
+            if(t->dims)
+                free(t->dims);
+            free(t);
+            return NULL;
+        }
 
-    t->strides[ndim - 1] = 1;
-    for(i = ndim - 2; i >= 0; i--)
-    {
-        t->strides[i] = dims[i + 1] * t->strides[i + 1];
-    }
+        t->strides[ndim - 1] = 1;
+        for (i = ndim - 2; i >= 0; i--)
+        {
+            t->strides[i] = dims[i + 1] * t->strides[i + 1];
+        }
 
-    memcpy(t->dims, dims, sizeof(int) * ndim);
+        memcpy(t->dims, dims, sizeof(int) * ndim);
 
-    for(i=0; i<ndim; i++)
-        ndata*= t->dims[i];
-    if(ndata != 0)
-        t->ndata = ndata;
-    else
-    {
-        free(t->strides);
-        free(t->dims);
-        free(t->name);
-        if(!arena) free(t);
-        return NULL;
-    }
+        for (i = 0; i < ndim; i++)
+            ndata *= t->dims[i];
 
-    if(arena)
-    {
-        t->datas = arena->datas + data_idx;
-    }
-    else
-    {
-        t->datas = malloc(onnx_tensor_type_sizeof(t->type)*ndata);
-        if(!t->datas)
+        if (ndata != 0)
+            t->ndata = ndata;
+        else
         {
             free(t->strides);
             free(t->dims);
@@ -88,210 +56,166 @@ Tensor * tensor_init(   const char * name,
             free(t);
             return NULL;
         }
-        memset(t->datas, 0, onnx_tensor_type_sizeof(t->type)*ndata);
     }
-
-    t->type = type;
-    t->isInitializer = 0;
-    t->ndim = ndim;
+    else
+    {
+        t->dims = NULL;
+        t->strides = NULL;
+        t->ndata = 0;
+    }
 
     return t;
 }
 
-Tensor * tensor_init_from_value_info(ValueInfoProto * v, TensorArena * arena, Tensor * tensor, int data_idx)
+void arena_add_tensor(Tensor * tensor, TensorArena * arena, int arena_pos)
 {
-    Tensor * t; 
-    int type;
-    int * dims = NULL;
-    int ndim;
-    int i;
+    if(!tensor || !arena || arena->n_tensors == arena->MAX_TENSORS)
+        return;
 
-    if(!v || !v->name)
+    if(arena_pos >= 0)
+    {
+        tensor->datas = arena->datas + arena_pos;
+    }
+    arena->tensors[arena->n_tensors] = tensor;
+    arena->n_tensors ++;
+}
+
+void arena_add_initializer(TensorProto * initializer, TensorArena * arena)
+{
+    int i = 0;
+    Tensor * t;
+    size_t ndata = 1;
+
+    if(!initializer || !arena || arena->n_tensors == arena->MAX_TENSORS)
+        return;
+
+    t = tensor_alloc_nodatas(shash(initializer->name), initializer->data_type, initializer->dims, initializer->n_dims, 1);
+
+    t->dims = malloc(sizeof(int) * initializer->n_dims);
+    t->strides = malloc(sizeof(int) * initializer->n_dims);
+
+    if (t->dims && t->strides)
+    {
+        t->strides[initializer->n_dims - 1] = 1;
+
+        for (i = initializer->n_dims - 2; i >= 0; i--)
+        {
+            t->strides[i] = initializer->dims[i + 1] * t->strides[i + 1];
+        }
+
+        for (i = 0; i < initializer->n_dims; i++)
+        {
+            t->dims[i] = initializer->dims[i];
+        }
+
+        t->ndim = initializer->n_dims;
+    }
+
+    for (i = 0; i < t->ndim; i++)
+    {
+        ndata *= t->dims[i];
+    }
+
+    if(initializer->raw_data.len > 0 && initializer->raw_data.data)
+    {
+        switch(t->type)
+        {
+            case TENSOR_TYPE_FLOAT32:
+            case TENSOR_TYPE_INT64:
+                {
+                    t->datas = initializer->raw_data.data;
+                    t->ndata = initializer->raw_data.len/(onnx_tensor_type_sizeof(t->type));
+                }
+                break;
+            default:
+                break;
+        }
+    }
+    else
+    {
+        switch (t->type)
+        {
+            case TENSOR_TYPE_FLOAT32:
+            {
+                t->datas = initializer->float_data;
+                t->ndata = initializer->n_float_data;
+            }
+                break;
+
+            case TENSOR_TYPE_INT64:
+                t->datas = initializer->int64_data;
+                t->ndata = initializer->n_int64_data;
+                break;
+
+            case TENSOR_TYPE_FLOAT16:
+            {
+                // TODO: Allocation handling scheme for float16 tensors
+                t->datas = initializer->int32_data;
+                t->ndata = ndata;
+            }
+                break;
+
+            default:
+                break; // TODO: ADD SUPPORT FOR OTHER DTYPES
+        }
+    }
+
+
+    if (ndata != t->ndata)
+    {
+        free_tensor_from_arena(t);
+        return;
+    }
+
+    arena_add_tensor(t, arena, -1);
+}
+
+void arena_add_intermediate(PlanProto * plan, TensorArena * arena)
+{
+    Tensor * t;
+
+    if(!plan || !arena || arena->n_tensors == arena->MAX_TENSORS)
+        return;
+
+    t = tensor_alloc_nodatas(plan->id, plan->type, plan->dims, plan->n_dims, 0);
+
+    arena_add_tensor(t, arena, plan->start_idx);
+}
+
+static int reshape_dummy(Node *n)
+{
+    return 1;
+}
+
+static void operator_dummy(Node *n)
+{
+    // Conditional compile
+    // printf("\033[45;37mUnsupported opset\033[0m => %s-%d (%s)\r\n", n->proto->op_type, n->opset, (strlen(n->proto->domain) > 0) ? n->proto->domain : "ai.onnx");
+    return;
+}
+
+Graph * graph_init_from_PlannerProto(ModelProto * model, PlannerProto * planner, TensorArena * arena)
+{
+    int i = 0, j = 0;
+    char *p, *domain;
+    Graph *g;
+    Node *n;
+
+    if(!model || !planner || !arena)
     {
         return NULL;
     }
 
-    if(v->type->value_case == ONNX__TYPE_PROTO__VALUE_TENSOR_TYPE)
-    {
-        type = v->type->tensor_type->elem_type;
-        ndim = v->type->tensor_type->shape->n_dim;
-
-        if(ndim>0)
-        {
-            dims = malloc(sizeof(int)*ndim);
-            if(dims)
-            {
-                for(i = 0; i < ndim; i++)
-                {
-                    if(v->type->tensor_type->shape->dim[i]->value_case == ONNX__TENSOR_SHAPE_PROTO__DIMENSION__VALUE_DIM_VALUE)
-                    {
-                        dims[i] = v->type->tensor_type->shape->dim[i]->dim_value;
-                    }
-                    else
-                    {
-                        dims[i] = 1;
-                    }
-                }
-            }
-            else
-            {
-                return NULL;
-            }
-        }
-
-        t = tensor_init(v->name, type, dims, ndim, arena, tensor, data_idx);
-
-        if(dims)
-        {
-            free(dims);
-            dims = NULL;
-        }
-
-        return t;
-    }
-
-    return NULL;
-}
-
-// Use TensorProto addresses for permanent tensor (weights)
-// Does not memcpy
-Tensor * tensor_init_from_proto(TensorProto * tp, Tensor * tensor) 
-{
-    int i;
-    size_t ndata = 1;
-    Tensor * t;
-    
-    if(tensor == NULL)
-    {
-        t = malloc(sizeof(Tensor));
-    }
-    else
-    {
-        t = tensor;
-    }
-    
-    if(tp)
-    {
-        t->name = strdup(tp->name);
-        t->type = tp->data_type;
-
-        t->dims = malloc(sizeof(int)*tp->n_dims); 
-        t->strides = malloc(sizeof(int)*tp->n_dims);
-
-        if(t->dims && t->strides)
-        {
-            t->strides[tp->n_dims - 1] = 1;
-            
-            for(i = tp->n_dims - 2; i >= 0; i--)
-            {
-                t->strides[i] = tp->dims[i + 1] * t->strides[i + 1];
-            }
-
-            for(i = 0; i < tp->n_dims; i++)
-            {
-                t->dims[i] =  tp->dims[i];
-            }
-
-            t->ndim = tp->n_dims;
-        }
-
-        for(i = 0; i < t->ndim; i++)
-        {
-            ndata *= t->dims[i];
-        }
-
-        t->isInitializer = 1;
-
-        switch(t->type)
-        {
-            case TENSOR_TYPE_FLOAT32:
-                t->datas = tp->float_data;
-                t->ndata = tp->n_float_data;
-                break;
-            
-            case TENSOR_TYPE_INT64:
-                t->datas = tp->int64_data;
-                t->ndata = tp->n_int64_data;
-                break;
-            
-            default:
-                break; // TODO: ADD SUPPORT FOR OTHER DTYPES
-        }
-
-
-        if(ndata != t->ndata) 
-        {
-            return NULL;
-        }
-
-
-        return t;
-    }
-
-    return NULL;
-}
-
-void free_tensor(Tensor * t)
-{
-    if(t)
-    {
-        if(t->name) free(t->name);
-        if(t->dims) free(t->dims);
-        if(t->strides) free(t->strides);
-        if(t->datas) free(t->datas);
-        free(t);
-    }
-}
-
-void free_tensor_from_arena(Tensor * t)
-{
-    if(t)
-    {
-        if(t->name) free(t->name);
-        if(t->dims) free(t->dims);
-        if(t->strides) free(t->strides);
-        free(t);
-    }
-}
-
-void tensor_apply(void * datas, size_t size, Tensor * t)
-{
-    if(t->name != NULL && t)
-    {
-        memcpy(t->datas, datas, size); // Run with sizeof()
-    }
-}
-
-static int reshape_dummy(Node * n)
-{
-	return 1;
-}
-
-static void operator_dummy(Node * n)
-{
-    // Conditional compile
-	// printf("\033[45;37mUnsupported opset\033[0m => %s-%d (%s)\r\n", n->proto->op_type, n->opset, (strlen(n->proto->domain) > 0) ? n->proto->domain : "ai.onnx");
-    return;
-}
-
-Graph * graph_init(GraphProto * gproto, ModelProto * model, TensorArena * arena, Planner * planner)
-{
-    int i = 0, j = 0, isInitializer = 0;
-    int n_tensor_count = 0;
-    char * p, * domain;
-    Graph * g;
-    Node * n;
-    ValueInfoProto * vp;
-
-    if(!gproto) return NULL;
+    GraphProto * gproto = model->graph;
 
     g = malloc(sizeof(Graph));
-    if(!g) return NULL;
-    
+    if (!g)
+        return NULL;
+
     memset(g, 0, sizeof(Graph));
 
-    g->nodes = malloc(sizeof(Node)*gproto->n_node);
-    if(!g->nodes)
+    g->nodes = malloc(sizeof(Node) * gproto->n_node);
+    if (!g->nodes)
     {
         free(g);
         return NULL;
@@ -299,115 +223,52 @@ Graph * graph_init(GraphProto * gproto, ModelProto * model, TensorArena * arena,
 
     g->nlen = gproto->n_node;
 
-    // Add inputs to graph
-    for(i = 0; i < gproto->n_input; i++)
+    for (i = 0; i < gproto->n_initializer; i++)
     {
-        // Add initializers into arena
-        vp = gproto->input[i];
-        if(!tensor_search(arena, vp->name))
-        {
-            for(j = 0; j < gproto->n_initializer; j++)
-            {
-                if(strcmp(gproto->initializer[j]->name, vp->name)==0)
-                {
-                    if(n_tensor_count >= arena->n_tensors)
-                    {
-                        // printf("Tensor blocks not enough. Expand arena.\n"); TODO: Conditional Compile
-                        free(g->nodes);
-                        return NULL;
-                    }
-                    tensor_init_from_proto(gproto->initializer[j], arena->tensors[n_tensor_count]);
-                    n_tensor_count++;
-                    isInitializer = 1;
-                }
-            }
-
-            // Initialize non-initializer inputs
-            if(!isInitializer)
-            {
-                if(n_tensor_count >= arena->n_tensors)
-                {
-                    // printf("Tensor blocks not enough. Expand arena.\n"); TODO: Conditional Compile
-                    free(g->nodes);
-                    return NULL;
-                }
-                tensor_init_from_value_info(vp, arena, arena->tensors[n_tensor_count], get_plan(vp->name, planner));
-                n_tensor_count++;
-            }
-
-            isInitializer = 0;
-        }
+        arena_add_initializer(gproto->initializer[i], arena);
     }
 
-    // Add outputs to graph
-    for(i = 0; i < gproto->n_output; i++)
+    for (i = 0; i < planner->n_plans; i++)
     {
-        vp = gproto->output[i];
-        if(!tensor_search(arena, vp->name))
-        {
-            if(n_tensor_count >= arena->n_tensors)
-            {
-                // printf("Tensor blocks not enough. Expand arena.\n"); TODO: Conditional Compile
-                free(g->nodes);
-                return NULL;
-            }
-            tensor_init_from_value_info(vp, arena, arena->tensors[n_tensor_count], get_plan(vp->name, planner));
-            n_tensor_count++;
-        }
+        arena_add_intermediate(planner->plans[i], arena);
     }
 
-    for(i = 0; i < gproto->n_value_info; i++)
-    {
-        vp = gproto->value_info[i];
-        if(!tensor_search(arena, vp->name))
-        {
-            if(n_tensor_count >= arena->n_tensors)
-            {
-                // printf("Tensor blocks not enough. Expand arena.\n"); TODO: Conditional Compile
-                free(g->nodes);
-                return NULL;
-            }
-            tensor_init_from_value_info(vp, arena, arena->tensors[n_tensor_count], get_plan(vp->name, planner));
-            n_tensor_count++;
-        }
-    }
-
-    for(i = 0; i < g->nlen; i++)
+    for (i = 0; i < g->nlen; i++)
     {
         n = &g->nodes[i];
         n->proto = gproto->node[i];
 
         domain = n->proto->domain;
-		if(!domain || (strlen(domain) == 0))
-			domain = "ai.onnx";
-		for(j = 0; j < model->n_opset_import; j++)
-		{
-			p = model->opset_import[j]->domain;
-			if(!p || (strlen(p) == 0))
-				p = "ai.onnx";
-			if(strcmp(domain, p) == 0)
-			{
-				n->opset = model->opset_import[j]->version;
-				break;
-			}
-		}
+        if (!domain || (strlen(domain) == 0))
+            domain = "ai.onnx";
+        for (j = 0; j < model->n_opset_import; j++)
+        {
+            p = model->opset_import[j]->domain;
+            if (!p || (strlen(p) == 0))
+                p = "ai.onnx";
+            if (strcmp(domain, p) == 0)
+            {
+                n->opset = model->opset_import[j]->version;
+                break;
+            }
+        }
 
-        n->inputs = malloc(sizeof(Tensor *)*gproto->node[i]->n_input);
-        if(n->inputs)
+        n->inputs = malloc(sizeof(Tensor *) * gproto->node[i]->n_input);
+        if (n->inputs)
         {
             n->ninputs = gproto->node[i]->n_input;
-            for(j = 0; j < gproto->node[i]->n_input; j++)
+            for (j = 0; j < gproto->node[i]->n_input; j++)
             {
                 n->inputs[j] = tensor_search(arena, gproto->node[i]->input[j]);
             }
         }
 
-        n->outputs = malloc(sizeof(Tensor *)*gproto->node[i]->n_output);
+        n->outputs = malloc(sizeof(Tensor *) * gproto->node[i]->n_output);
 
-        if(n->outputs)
+        if (n->outputs)
         {
             n->noutputs = gproto->node[i]->n_output;
-            for(j = 0; j < gproto->node[i]->n_output; j++)
+            for (j = 0; j < gproto->node[i]->n_output; j++)
             {
                 n->outputs[j] = tensor_search(arena, gproto->node[i]->output[j]);
             }
@@ -415,58 +276,81 @@ Graph * graph_init(GraphProto * gproto, ModelProto * model, TensorArena * arena,
 
         resolver_solve_operator(&resolver_default, n, n->proto->op_type);
 
-        if(!n->reshape)
+        if (!n->reshape)
             n->reshape = reshape_dummy;
-		if(!n->operator)
-			n->operator = operator_dummy;
-		if(n->init)
-		{
-			if(n->init(n) <= 0)
-			{
-				if(g->nodes)
-				{
-					for(j = 0; j <= i; j++)
-					{
-						n = &g->nodes[j];
-						if(n->exit)
-							n->exit(n);
-						if(n->inputs)
-							free(n->inputs);
-						if(n->outputs)
-							free(n->outputs);
-					}
-					free(g->nodes);
-				}
-				free(g);
-				return NULL;
-			}
-		}
-		if(n->reshape)
-			n->reshape(n);
+        if (!n->op)
+            n->op= operator_dummy;
+        if (n->init)
+        {
+            if (n->init(n) <= 0)
+            {
+                if (g->nodes)
+                {
+                    for (j = 0; j <= i; j++)
+                    {
+                        n = &g->nodes[j];
+                        if (n->exit)
+                            n->exit(n);
+                        if (n->inputs)
+                            free(n->inputs);
+                        if (n->outputs)
+                            free(n->outputs);
+                    }
+                    free(g->nodes);
+                }
+                free(g);
+                return NULL;
+            }
+        }
+
+        if (n->reshape)
+            n->reshape(n);
     }
 
     return g;
 }
 
-void free_graph(Graph * g)
+void tensor_apply(void *datas, size_t size, Tensor *t)
 {
-    Node * n;
+    if (t)
+    {
+        memcpy(t->datas, datas, size); // Run with sizeof()
+    }
+}
+
+void free_tensor_from_arena(Tensor *t)
+{
+    if (t)
+    {
+        if (t->dims)
+            free(t->dims);
+        if (t->strides)
+            free(t->strides);
+        free(t);
+    }
+}
+
+void free_graph(Graph *g)
+{
+    Node *n;
     int i = 0;
 
-    if(g)
+    if (g)
     {
-        if(g->nodes)
+        if (g->nodes)
         {
-            for(i = 0; i < g->nlen; i++)
+            for (i = 0; i < g->nlen; i++)
             {
                 n = &g->nodes[i];
-                if(n->exit) n->exit(n);
-                if(n->inputs) free(n->inputs);
-                if(n->outputs) free(n->outputs);
+                if (n->exit)
+                    n->exit(n);
+                if (n->inputs)
+                    free(n->inputs);
+                if (n->outputs)
+                    free(n->outputs);
             }
             free(g->nodes);
         }
         free(g);
     }
 }
-

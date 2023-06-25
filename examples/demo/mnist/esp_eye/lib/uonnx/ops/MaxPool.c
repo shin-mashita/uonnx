@@ -423,31 +423,31 @@ void resolver_default_op_MaxPool(Node * n)
 			n->init = MaxPool_init;
 			n->exit = MaxPool_exit;
 			n->reshape = MaxPool_reshape;
-			n->operator = MaxPool_int8;
+			n->op = MaxPool_int8;
 			break;
 		case TENSOR_TYPE_UINT8:
 			n->init = MaxPool_init;
 			n->exit = MaxPool_exit;
 			n->reshape = MaxPool_reshape;
-			n->operator = MaxPool_uint8;
+			n->op = MaxPool_uint8;
 			break;
 		case TENSOR_TYPE_FLOAT16:
 			n->init = MaxPool_init;
 			n->exit = MaxPool_exit;
 			n->reshape = MaxPool_reshape;
-			n->operator = MaxPool_float16;
+			n->op = MaxPool_float16;
 			break;
 		case TENSOR_TYPE_FLOAT32:
 			n->init = MaxPool_init;
 			n->exit = MaxPool_exit;
 			n->reshape = MaxPool_reshape;
-			n->operator = MaxPool_float32;
+			n->op = MaxPool_float32;
 			break;
 		case TENSOR_TYPE_FLOAT64:
 			n->init = MaxPool_init;
 			n->exit = MaxPool_exit;
 			n->reshape = MaxPool_reshape;
-			n->operator = MaxPool_float64;
+			n->op = MaxPool_float64;
 			break;
 		default:
 			break;
@@ -461,19 +461,19 @@ void resolver_default_op_MaxPool(Node * n)
 			n->init = MaxPool_init;
 			n->exit = MaxPool_exit;
 			n->reshape = MaxPool_reshape;
-			n->operator = MaxPool_float16;
+			n->op = MaxPool_float16;
 			break;
 		case TENSOR_TYPE_FLOAT32:
 			n->init = MaxPool_init;
 			n->exit = MaxPool_exit;
 			n->reshape = MaxPool_reshape;
-			n->operator = MaxPool_float32;
+			n->op = MaxPool_float32;
 			break;
 		case TENSOR_TYPE_FLOAT64:
 			n->init = MaxPool_init;
 			n->exit = MaxPool_exit;
 			n->reshape = MaxPool_reshape;
-			n->operator = MaxPool_float64;
+			n->op = MaxPool_float64;
 			break;
 		default:
 			break;
@@ -487,19 +487,19 @@ void resolver_default_op_MaxPool(Node * n)
 			n->init = MaxPool_init;
 			n->exit = MaxPool_exit;
 			n->reshape = MaxPool_reshape;
-			n->operator = MaxPool_float16;
+			n->op = MaxPool_float16;
 			break;
 		case TENSOR_TYPE_FLOAT32:
 			n->init = MaxPool_init;
 			n->exit = MaxPool_exit;
 			n->reshape = MaxPool_reshape;
-			n->operator = MaxPool_float32;
+			n->op = MaxPool_float32;
 			break;
 		case TENSOR_TYPE_FLOAT64:
 			n->init = MaxPool_init;
 			n->exit = MaxPool_exit;
 			n->reshape = MaxPool_reshape;
-			n->operator = MaxPool_float64;
+			n->op = MaxPool_float64;
 			break;
 		default:
 			break;
@@ -513,19 +513,19 @@ void resolver_default_op_MaxPool(Node * n)
 			n->init = MaxPool_init;
 			n->exit = MaxPool_exit;
 			n->reshape = MaxPool_reshape;
-			n->operator = MaxPool_float16;
+			n->op = MaxPool_float16;
 			break;
 		case TENSOR_TYPE_FLOAT32:
 			n->init = MaxPool_init;
 			n->exit = MaxPool_exit;
 			n->reshape = MaxPool_reshape;
-			n->operator = MaxPool_float32;
+			n->op = MaxPool_float32;
 			break;
 		case TENSOR_TYPE_FLOAT64:
 			n->init = MaxPool_init;
 			n->exit = MaxPool_exit;
 			n->reshape = MaxPool_reshape;
-			n->operator = MaxPool_float64;
+			n->op = MaxPool_float64;
 			break;
 		default:
 			break;
@@ -539,19 +539,19 @@ void resolver_default_op_MaxPool(Node * n)
 			n->init = MaxPool_init;
 			n->exit = MaxPool_exit;
 			n->reshape = MaxPool_reshape;
-			n->operator = MaxPool_float16;
+			n->op = MaxPool_float16;
 			break;
 		case TENSOR_TYPE_FLOAT32:
 			n->init = MaxPool_init;
 			n->exit = MaxPool_exit;
 			n->reshape = MaxPool_reshape;
-			n->operator = MaxPool_float32;
+			n->op = MaxPool_float32;
 			break;
 		case TENSOR_TYPE_FLOAT64:
 			n->init = MaxPool_init;
 			n->exit = MaxPool_exit;
 			n->reshape = MaxPool_reshape;
-			n->operator = MaxPool_float64;
+			n->op = MaxPool_float64;
 			break;
 		default:
 			break;

@@ -1,84 +1,21 @@
 #include <uonnx.h>
-#include "model.h"
+// #include "model.h"
+#include "uonnx_mnist.h"
 #include <malloc.h>
 // TODO: Tensor apply inconsistents with sizeof() and with actual indexes
 
-printMemoryInfo()
-{
-   struct mallinfo mi;
-   memset(&mi,0,sizeof(struct mallinfo));
-   mi = mallinfo();
-   printf("Current Usage: %d\n",mi.uordblks);
-}
-
-void read_planner(PlannerProto * planner)
-{
-    int i = 0, j = 0;
-
-    printf("Arena max tensors: %d\n", planner->arena->max_ntensors);
-    printf("Arena max bytes: %d\n", planner->arena->max_bytes);
-    
-    for(i = 0; i < planner->n_plans; i++)
-    {
-        printf("Planner: %s\n", planner->plans[i]->name);
-        printf("\tstart_idx: %d\n", planner->plans[i]->start_idx);
-        printf("\tsize: %d\n", planner->plans[i]->size);
-        printf("\tndata: %d\n", planner->plans[i]->ndata);
-        printf("\tndims: %d\n", planner->plans[i]->n_dims);
-        printf("\tdims: ");
-        for(j = 0; j < planner->plans[i]->n_dims; j++)
-        {
-            printf("%d ", planner->plans[i]->dims[j]);
-        }
-        printf("\n");
-    }
-}
-
 int main()
 {
-    ModelProto * model;
-    PlannerProto * planner;
-    TensorArena * arena;
-    Graph * g;
-    
-    printMemoryInfo();
-    model = load_model("./scratch/model.onnx");
-    // model = load_model("./scratch/kws_float32_9.onnx");
-    printMemoryInfo();
-    planner = load_planner("./scratch/model_planner.pb");
-    // planner = load_planner("./scratch/kws_float32_9_planner.pb");
-    printMemoryInfo();
-    
-    
-    arena = arena_init_v2(planner->arena->max_ntensors + model->graph->n_initializer, planner->arena->max_bytes);
+    Context * ctx = uonnx_init(mnist_onnx, sizeof(mnist_onnx), mnist_planner, sizeof(mnist_planner));
 
-    // read_planner(planner);
-    
-    g = graph_init_from_PlannerProto(model->graph, model, planner, arena);
+    Tensor * input = tensor_search(ctx->arena, "Input3");
+    Tensor * output = tensor_search(ctx->arena, "Plus214_Output_0");
+    tensor_apply((void *)input_3, sizeof(input_3), input);
 
-    // Tensor * t = tensor_search(arena, "input_1");
-    // tensor_apply((void*)(input_1), sizeof(input_1), t);
+    uonnx_run(ctx);
 
-    Tensor * t = tensor_search(arena, "Input3");
-    tensor_apply((void*)(input_3), sizeof(input_3), t);
-
-    printMemoryInfo();
-    Node *n;
-
-    for(int i = 0; i < g->nlen; i++)
-    {
-        n = &g->nodes[i];
-        n->operator(n);
-    }
-
-    printMemoryInfo();
-    // dump_graph(g);
-
-    free_graph(g);
-    free_arena(arena);
-    free_plannerproto(planner);
-    free_model(model);
-    printMemoryInfo();
+    dump_graph(ctx->graph);
+    uonnx_free(ctx);
     
     return 0;
 }

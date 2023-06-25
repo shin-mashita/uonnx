@@ -321,49 +321,49 @@ void resolver_default_op_MatMul(Node * n)
 			n->init = MatMul_init;
 			n->exit = MatMul_exit;
 			n->reshape = MatMul_reshape;
-			n->operator = MatMul_int32;
+			n->op = MatMul_int32;
 			break;
 		case TENSOR_TYPE_INT64:
 			n->init = MatMul_init;
 			n->exit = MatMul_exit;
 			n->reshape = MatMul_reshape;
-			n->operator = MatMul_int64;
+			n->op = MatMul_int64;
 			break;
 		case TENSOR_TYPE_UINT32:
 			n->init = MatMul_init;
 			n->exit = MatMul_exit;
 			n->reshape = MatMul_reshape;
-			n->operator = MatMul_uint32;
+			n->op = MatMul_uint32;
 			break;
 		case TENSOR_TYPE_UINT64:
 			n->init = MatMul_init;
 			n->exit = MatMul_exit;
 			n->reshape = MatMul_reshape;
-			n->operator = MatMul_uint64;
+			n->op = MatMul_uint64;
 			break;
 		case TENSOR_TYPE_BFLOAT16:
 			n->init = MatMul_init;
 			n->exit = MatMul_exit;
 			n->reshape = MatMul_reshape;
-			n->operator = MatMul_bfloat16;
+			n->op = MatMul_bfloat16;
 			break;
 		case TENSOR_TYPE_FLOAT16:
 			n->init = MatMul_init;
 			n->exit = MatMul_exit;
 			n->reshape = MatMul_reshape;
-			n->operator = MatMul_float16;
+			n->op = MatMul_float16;
 			break;
 		case TENSOR_TYPE_FLOAT32:
 			n->init = MatMul_init;
 			n->exit = MatMul_exit;
 			n->reshape = MatMul_reshape;
-			n->operator = MatMul_float32;
+			n->op = MatMul_float32;
 			break;
 		case TENSOR_TYPE_FLOAT64:
 			n->init = MatMul_init;
 			n->exit = MatMul_exit;
 			n->reshape = MatMul_reshape;
-			n->operator = MatMul_float64;
+			n->op = MatMul_float64;
 			break;
 		default:
 			break;
@@ -377,43 +377,43 @@ void resolver_default_op_MatMul(Node * n)
 			n->init = MatMul_init;
 			n->exit = MatMul_exit;
 			n->reshape = MatMul_reshape;
-			n->operator = MatMul_int32;
+			n->op = MatMul_int32;
 			break;
 		case TENSOR_TYPE_INT64:
 			n->init = MatMul_init;
 			n->exit = MatMul_exit;
 			n->reshape = MatMul_reshape;
-			n->operator = MatMul_int64;
+			n->op = MatMul_int64;
 			break;
 		case TENSOR_TYPE_UINT32:
 			n->init = MatMul_init;
 			n->exit = MatMul_exit;
 			n->reshape = MatMul_reshape;
-			n->operator = MatMul_uint32;
+			n->op = MatMul_uint32;
 			break;
 		case TENSOR_TYPE_UINT64:
 			n->init = MatMul_init;
 			n->exit = MatMul_exit;
 			n->reshape = MatMul_reshape;
-			n->operator = MatMul_uint64;
+			n->op = MatMul_uint64;
 			break;
 		case TENSOR_TYPE_FLOAT16:
 			n->init = MatMul_init;
 			n->exit = MatMul_exit;
 			n->reshape = MatMul_reshape;
-			n->operator = MatMul_float16;
+			n->op = MatMul_float16;
 			break;
 		case TENSOR_TYPE_FLOAT32:
 			n->init = MatMul_init;
 			n->exit = MatMul_exit;
 			n->reshape = MatMul_reshape;
-			n->operator = MatMul_float32;
+			n->op = MatMul_float32;
 			break;
 		case TENSOR_TYPE_FLOAT64:
 			n->init = MatMul_init;
 			n->exit = MatMul_exit;
 			n->reshape = MatMul_reshape;
-			n->operator = MatMul_float64;
+			n->op = MatMul_float64;
 			break;
 		default:
 			break;
@@ -427,19 +427,19 @@ void resolver_default_op_MatMul(Node * n)
 			n->init = MatMul_init;
 			n->exit = MatMul_exit;
 			n->reshape = MatMul_reshape;
-			n->operator = MatMul_float16;
+			n->op = MatMul_float16;
 			break;
 		case TENSOR_TYPE_FLOAT32:
 			n->init = MatMul_init;
 			n->exit = MatMul_exit;
 			n->reshape = MatMul_reshape;
-			n->operator = MatMul_float32;
+			n->op = MatMul_float32;
 			break;
 		case TENSOR_TYPE_FLOAT64:
 			n->init = MatMul_init;
 			n->exit = MatMul_exit;
 			n->reshape = MatMul_reshape;
-			n->operator = MatMul_float64;
+			n->op = MatMul_float64;
 			break;
 		default:
 			break;
