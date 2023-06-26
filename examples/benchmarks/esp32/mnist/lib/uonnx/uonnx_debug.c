@@ -31,7 +31,7 @@ void dump_plannerproto(PlannerProto * planner)
     {
         printf("Planner: %x\n", planner->plans[i]->id);
         printf("\tstart_idx: %d\n", planner->plans[i]->start_idx);
-        printf("\tndims: %ld\n", planner->plans[i]->n_dims);
+        printf("\tndims: %d\n", planner->plans[i]->n_dims);
         printf("\tdims: ");
         for(j = 0; j < planner->plans[i]->n_dims; j++)
         {
@@ -122,7 +122,7 @@ void dump_tensor(Tensor *t)
 
     printf("Tensor: \"%x\"\n", t->id);
     printf("\tdtype: %s\n", TensorType2String(t->type));
-    printf("\tndata: %ld\n", t->ndata);
+    printf("\tndata: %d\n", t->ndata);
     printf("\tdatas: ");
     switch (t->type)
     {
@@ -137,14 +137,14 @@ void dump_tensor(Tensor *t)
         for (i = 0; i < min(t->ndata, 10); i++)
         {
             int64_t *v = (int64_t *)t->datas;
-            printf("%ld ", v[i]);
+            printf("%lld ", v[i]);
         }
         break;
     default: // TODO: Log for other dtypes
         break;
     }
     printf("... \n");
-    printf("\tndim: %ld\n", t->ndim);
+    printf("\tndim: %d\n", t->ndim);
     printf("\tdims: ");
     for (i = 0; i < t->ndim; i++)
         printf("%d ", t->dims[i]);
