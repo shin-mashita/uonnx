@@ -94,10 +94,10 @@ else ifeq (vww, $(filter vww,$(MAKECMDGOALS)))
 	@./build/examples/benchmarks/cpu/vww.out
 else
 	@clear
-	@echo [MK] Compiling mnist benchmark...
-	@make run APP=examples/benchmarks/cpu/mnist
-	@echo [MK] Running mnist benchmark on CPU...
-	@./build/examples/benchmarks/cpu/mnist.out
+	@echo [MK] Compiling reference benchmark...
+	@make run APP=examples/benchmarks/cpu/ref
+	@echo [MK] Running ref benchmark on CPU...
+	@./build/examples/benchmarks/cpu/ref.out
 endif
 
 header:

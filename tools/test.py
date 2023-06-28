@@ -220,8 +220,8 @@ def read_pbfile(filename: str):
 # TODO PLANNER Viz
 
 if __name__ == "__main__":
-    create_plannerproto_file("kws_float32_9.onnx")
-    read_pbfile("kws_float32_9_planner.pb")
+    create_plannerproto_file("reference.onnx")
+    read_pbfile("reference_planner.pb")
 
 
 # MNIST: 505 B -> 248 B
