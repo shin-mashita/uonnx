@@ -17,7 +17,7 @@ void get_cpu_heap(const char * TAG)
    struct mallinfo info;
    memset(&info,0,sizeof(struct mallinfo));
    info = mallinfo();
-   printf("CPU Heap at [%s]: uordblks: %d | hblkhd: %d | total: \n", TAG, info.uordblks, info.hblkhd, info.uordblks + info.hblkhd);
+   printf("CPU Heap at [%s]: uordblks: %d | hblkhd: %d | total: %d\n", TAG, info.uordblks, info.hblkhd, info.uordblks + info.hblkhd);
 }
 
 void dump_plannerproto(PlannerProto * planner)
@@ -155,90 +155,21 @@ void dump_tensor(Tensor *t)
     printf("\n");
     printf("\tisInitializer: %d", t->isInitializer);
     printf("\n\n");
-
-    // printf("%s - %s (", v->name, TensorType2String(type));
-    // for(i = 0; i < ndim; i++)
-    // {
-    //     printf("%d", dims[i]);
-    //     if(i<ndim-1)printf(" x ");
-    // }
-    // printf(")\n");
 }
 
-void dump_planner(Planner *planner)
-{
-    int i = 0;
-    for (i = 0; i < planner->n_plans; i++)
-    {
-        if (planner->plans[i]->tensor_name)
-        {
-            printf("Tensor \"%s\" assigned in idx %d\n", planner->plans[i]->tensor_name, planner->plans[i]->index);
-        }
-        else
-        {
-            printf("Tensor NULL assigned in idx NULL\n");
-        }
-    }
-}
-
-// Add to uonnx_tests ?
-
-// void op_testrun_no_attr(Tensor **inputs, Tensor **outputs, int ninputs, int noutputs, char *op_type, int opset)
+/** OFFLINE PLANNER*/
+// void dump_planner(Planner *planner)
 // {
 //     int i = 0;
-//     Node *n = (Node *)malloc(sizeof(Node));
-//     if (!n)
-//         return;
-
-//     n->ninputs = ninputs;
-//     n->noutputs = noutputs;
-//     n->opset = opset;
-
-//     n->inputs = inputs;
-//     n->outputs = outputs;
-
-//     if (n->inputs && n->outputs)
+//     for (i = 0; i < planner->n_plans; i++)
 //     {
-//         resolver_solve_operator(&resolver_default, n, op_type);
-//         if (n->operator)
+//         if (planner->plans[i]->tensor_name)
 //         {
-//             printf("Input tensors for optype %s\n", op_type);
-//             for (i = 0; i < ninputs; i++)
-//             {
-//                 dump_tensor(n->inputs[i]);
-//             }
-
-//             n->operator(n);
-
-//             printf("Output tensors for optype %s\n", op_type);
-//             for (i = 0; i < noutputs; i++)
-//             {
-//                 dump_tensor(n->outputs[i]);
-//             }
+//             printf("Tensor \"%s\" assigned in idx %d\n", planner->plans[i]->tensor_name, planner->plans[i]->index);
+//         }
+//         else
+//         {
+//             printf("Tensor NULL assigned in idx NULL\n");
 //         }
 //     }
-
-//     if (n)
-//     {
-//         if (n->inputs)
-//             free(n->inputs);
-//         if (n->outputs)
-//             free(n->outputs);
-//         free(n);
-//     }
-// }
-
-// void op_test_Add(void *in_a,
-//                  TensorType type_in_a,
-//                  int *dims_in_a,
-//                  size_t ndims_in_a,
-//                  void *in_b, 
-//                  void *output, 
-//                  TensorType type_b)
-// {
-//     int ninputs = 2;
-//     int noutput = 1;
-//     int i = 0;
-//     Tensor *t;
-//     t->tensor_init("Test1", )
 // }

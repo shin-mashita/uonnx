@@ -6,7 +6,7 @@ extern "C" {
 #endif
 
 
-#include <uonnx.h>
+#include "uonnx.h"
 
 /**
  * @brief Check if ptr1 and ptr2 points to the same address.
@@ -16,7 +16,13 @@ extern "C" {
  */
 void addrcmp(void *ptr1, void *ptr2);
 
+/**
+ * @brief Get the cpu heap usage using mallinfo
+ * 
+ * @param TAG 
+ */
 void get_cpu_heap(const char * TAG);
+
 void dump_plannerproto(PlannerProto * planner);
 
 /**

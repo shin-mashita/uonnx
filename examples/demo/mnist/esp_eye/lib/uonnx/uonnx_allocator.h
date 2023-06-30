@@ -5,12 +5,28 @@
 extern "C" {
 #endif
 
-#include <uonnx.h>
+#include "uonnx.h"
 
+/**
+ * @brief Alloc space for tensor. Data set to 0.
+ * 
+ * @param tensor_id 
+ * @param type 
+ * @param dims 
+ * @param ndim 
+ * @param isInitializer 
+ * @return Tensor* 
+ */
 Tensor * tensor_alloc_nodatas(uint32_t tensor_id, TensorType type, int * dims, int ndim, uint8_t isInitializer);
-void arena_add_tensor(Tensor * tensor, TensorArena * arena, int arena_pos);
-void arena_add_initializer(TensorProto * initializer, TensorArena * arena);
-void arena_add_intermediate(PlanProto * plan, TensorArena * arena);
+
+/**
+ * @brief Initialize uONNX graph from PlannerProto
+ * 
+ * @param model 
+ * @param planner 
+ * @param arena 
+ * @return Graph* 
+ */
 Graph * graph_init_from_PlannerProto(ModelProto * model, PlannerProto * planner, TensorArena * arena);
 
 /**

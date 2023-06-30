@@ -1,18 +1,13 @@
 #include "uonnx_resolver.h"
 
-void resolver_solve_operator(Resolver * r, Node * n, char * op_type)
+void resolver_solve_operator(Resolver * r, Node * n)
 {
     void (*rop)(Node *);
 
     if(r && n)
     {
-        switch(shash(op_type)) // Changed from n->proto->op_type
+        switch(shash(n->proto->op_type)) // Changed from 
         {
-            #ifdef UONNX_OP_TEST
-            case 0x39d6d0e3: /* Test_Op*/
-                rop = r->op_Abs;
-                break;
-            #endif
             case 0x0b87d47b: /* "Abs" */
                 rop = r->op_Abs;
                 break;

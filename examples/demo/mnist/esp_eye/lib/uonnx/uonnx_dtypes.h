@@ -5,7 +5,7 @@
 extern "C" {
 #endif
 
-#include <uonnx.h>
+#include "uonnx.h"
 
 typedef Onnx__ModelProto ModelProto;
 typedef Onnx__GraphProto GraphProto; 

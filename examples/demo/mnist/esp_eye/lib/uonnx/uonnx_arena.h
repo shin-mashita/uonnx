@@ -5,7 +5,8 @@
 extern "C" {
 #endif
 
-#include <uonnx.h>
+#include "uonnx.h"
+
 
 /**
  * @brief Initialize buffer for tensors.
@@ -17,19 +18,36 @@ extern "C" {
 TensorArena * arena_init(const int MAX_TENSORS, const size_t MAX_BYTES);
 
 /**
- * @brief Initialize TensorArena from Planner
- * 
- * @param planner Memory planner
- * @return TensorArena* 
- */
-TensorArena * arena_init_from_planner(Planner * planner);
-
-/**
  * @brief Free TensorArena
  * 
  * @param arena to free
  */
 void free_arena(TensorArena * arena);
+
+/**
+ * @brief Add tensor to arena at index arena_pos
+ * 
+ * @param tensor 
+ * @param arena 
+ * @param arena_pos 
+ */
+void arena_add_tensor(Tensor * tensor, TensorArena * arena, int arena_pos);
+
+/**
+ * @brief Add initializer to arena.
+ * 
+ * @param initializer 
+ * @param arena 
+ */
+void arena_add_initializer(TensorProto * initializer, TensorArena * arena);
+
+/**
+ * @brief Add intermediate tensor(from plan) to arena.
+ * 
+ * @param plan 
+ * @param arena 
+ */
+void arena_add_intermediate(PlanProto * plan, TensorArena * arena);
 
 /**
  * @brief Search tensors in arena by name

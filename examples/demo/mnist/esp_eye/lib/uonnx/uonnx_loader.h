@@ -5,7 +5,7 @@
 extern "C" {
 #endif
 
-#include <uonnx.h>
+#include "uonnx.h"
 
 /**
  * @brief Load ModelProto from buffer from header

@@ -6,16 +6,12 @@
 #include "sdkconfig.h"
 
 #include <uonnx.h>
-#include <model.h>
+#include <mnist_onnx.h>
 #include "esp_camera.h"
 
-static const char *TAG = "example";
+static const char *TAG = "DEMO";
 Context *ctx;
-Planner *planner;
-
-ModelProto * model;
-Graph * graph;
-TensorArena * arena;
+Tensor * input, * output;
 
 static float input_buf[784];
 static float output_buf[10];
@@ -152,9 +148,9 @@ void camera_init()
         }
     }
     sensor_t *s = esp_camera_sensor_get();
-    s->set_brightness(s, 0);
+    // s->set_brightness(s, 0);
     s->set_contrast(s, 2);
-    s->set_saturation(s, -2);
+    // s->set_saturation(s, -2);
     s->set_exposure_ctrl(s, 0);
     s->set_ae_level(s, 2);
     s->set_aec_value(s, 1200);
@@ -162,6 +158,10 @@ void camera_init()
     s->set_agc_gain(s, 0);
     s->set_whitebal(s, 0);
     s->set_awb_gain(s, 0);
+
+    s->set_vflip(s, 1); // flip it back
+    s->set_brightness(s, 1); // up the brightness just a bit
+    s->set_saturation(s, -2); // lower the saturation
 }
 
 void get_frame()
@@ -188,9 +188,9 @@ void get_frame()
             //  floor/ceil dark/light gray
             if (pixel < 64)
                 pixel = 0;
-            if (pixel >= 192)
-                pixel = 255;
-            input_buf[k] = (float)pixel;
+            // if (pixel >= 192)
+            //     pixel = 255;
+            input_buf[k] = 255 - (float)pixel;
             k++;
         }
     }
@@ -254,11 +254,15 @@ void print_label()
 
 void preview_input_buf()
 {
-    for(i=300; i<310; i++)
+    printf("XXXXXXXXXXXXXXXX ");
+    for(i=0; i<784; i++)
     {
-        printf("%.2f ", input_buf[i]);
+        printf("%d ", (uint8_t)input_buf[i]);
+        // ESP_LOGI(TAG, "%.2f ", input_buf[i]);
     }
+    printf("OOOOOOOOOOOOOOOO ");
     printf("\n");
+    // ESP_LOGI(TAG,"\n");
 }
 
 void app_main(void)
@@ -268,31 +272,21 @@ void app_main(void)
     camera_config();
     camera_init();
 
-    planner = planner_init(13, sizeof(float) * (15300), 21);
-    planner_add("Parameter193_reshape1", 0, planner);                             // fp32 (2560) - Node 0 10
-    planner_add("Input3", sizeof(float) * (2560 + 6272), planner);                // fp32 (784) - Node 1
-    planner_add("Convolution28_Output_0", sizeof(float) * (2560), planner);       // fp32 (6272) - Node 1 2
-    planner_add("Plus30_Output_0", sizeof(float) * (2560 + 6272), planner);       // fp32 (6272) - Node 2 3
-    planner_add("ReLU32_Output_0", sizeof(float) * (2560), planner);              // fp32 (6272) - Node 3 4
-    planner_add("Pooling66_Output_0", sizeof(float) * (2560 + 6272), planner);    // fp32 (1568) - Node 4 5
-    planner_add("Convolution110_Output_0", sizeof(float) * (2560), planner);      // fp32 (3136) - Node 5 6
-    planner_add("Plus112_Output_0", sizeof(float) * (2560 + 3136), planner);      // fp32 (3136) - Node 6 7
-    planner_add("ReLU114_Output_0", sizeof(float) * (2560), planner);             // fp32 (3136) - Node 7 8
-    planner_add("Pooling160_Output_0", sizeof(float) * (2560 + 3136), planner);   // fp32 (256) - Node 8 9
-    planner_add("Pooling160_Output_0_reshape0", sizeof(float) * (2560), planner); // fp32 (256) - 9 10
-    planner_add("Times212_Output_0", sizeof(float) * (2560 + 256), planner);      // fp32 (10) - Node 10 11
-    planner_add("Plus214_Output_0", sizeof(float) * (0), planner);                // fp32 (10) - Node 11
-
-    ctx = uonnx_init(NULL, mnist_onnx, sizeof(mnist_onnx), (void *)input_buf, sizeof(input_buf), "Input3", (void *)output_buf, sizeof(output_buf), "Plus214_Output_0", planner);
-    // model = load_model_buf(mnist_onnx, sizeof(mnist_onnx));
-
+    ctx = uonnx_init(mnist_onnx, sizeof(mnist_onnx), mnist_planner, sizeof(mnist_planner));
+    input = tensor_search(ctx->arena, "Input3");
+    output = tensor_search(ctx->arena, "Plus214_Output_0");
+    
     while(1)
     {
         get_frame();
+        preview_input_buf();
+        tensor_apply((void *)input_buf, sizeof(input_buf), input);
         uonnx_run(ctx);
-        // preview_input_buf();
+        
         memfree_at_run = esp_get_free_heap_size();
-        memuse_at_run = memfree_at_init - memfree_at_run;        output_argmax();
+        memuse_at_run = memfree_at_init - memfree_at_run;  
+        memcpy(output_buf, output->datas, sizeof(output_buf));      
+        output_argmax();
         print_label();
     }
 

@@ -5,7 +5,7 @@
 extern "C" {
 #endif
 
-#include <uonnx.h>
+#include "uonnx.h"
 
 char * TensorType2String(TensorType t);
 int onnx_tensor_type_sizeof(TensorType type);
