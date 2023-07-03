@@ -1,5 +1,7 @@
 #include "uonnx.h"
 
+#ifdef UONNX_OPS_RELU
+
 static int Relu_init(Node * n)
 {
 	if((n->ninputs == 1) && (n->noutputs == 1))
@@ -263,3 +265,5 @@ void resolver_default_op_Relu(Node * n)
 		}
 	}
 }
+
+#endif

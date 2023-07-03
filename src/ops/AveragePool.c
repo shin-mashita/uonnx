@@ -1,5 +1,7 @@
 #include "uonnx.h"
 
+#ifdef UONNX_OPS_AVERAGEPOOL
+
 enum auto_pad_t {
 	AUTO_PAD_NOTSET		= 0,
 	AUTO_PAD_SAME_UPPER	= 1,
@@ -459,3 +461,5 @@ void resolver_default_op_AveragePool(Node * n)
 		}
 	}
 }
+
+#endif

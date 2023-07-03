@@ -1,5 +1,7 @@
 #include "uonnx.h"
 
+#ifdef UONNX_OPS_RESHAPE
+
 static int Reshape_init(Node * n)
 {
 	Tensor * x;
@@ -172,3 +174,5 @@ void resolver_default_op_Reshape(Node * n)
 	{
 	}
 }
+
+#endif

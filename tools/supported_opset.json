@@ -1,0 +1,464 @@
+{
+    "Abs": [
+        13,
+        6,
+        1
+    ],
+    "Acos": [
+        7
+    ],
+    "Acosh": [
+        9
+    ],
+    "Add": [
+        14,
+        13,
+        7
+    ],
+    "And": [
+        7
+    ],
+    "ArgMax": [
+        13,
+        12,
+        11,
+        1
+    ],
+    "ArgMin": [
+        13,
+        12,
+        11,
+        1
+    ],
+    "Asin": [
+        7
+    ],
+    "Asinh": [
+        9
+    ],
+    "Atan": [
+        7
+    ],
+    "Atanh": [
+        9
+    ],
+    "AveragePool": [
+        11,
+        10,
+        7,
+        1
+    ],
+    "BatchNormalization": [
+        9,
+        7
+    ],
+    "BitShift": [
+        11
+    ],
+    "Cast": [
+        13,
+        9,
+        6
+    ],
+    "Ceil": [
+        13,
+        6,
+        1
+    ],
+    "Clip": [
+        13,
+        12,
+        11
+    ],
+    "Concat": [
+        13,
+        11,
+        4,
+        1
+    ],
+    "Constant": [
+        13,
+        12,
+        11,
+        9,
+        1
+    ],
+    "ConstantOfShape": [
+        9
+    ],
+    "Conv": [
+        11,
+        1
+    ],
+    "Cos": [
+        7
+    ],
+    "Cosh": [
+        9
+    ],
+    "Div": [
+        14,
+        13,
+        7
+    ],
+    "Dropout": [
+        13,
+        12,
+        10,
+        7,
+        6,
+        1
+    ],
+    "Elu": [
+        6,
+        1
+    ],
+    "Equal": [
+        13,
+        11,
+        7
+    ],
+    "Erf": [
+        13,
+        9
+    ],
+    "Exp": [
+        13,
+        6,
+        1
+    ],
+    "Expand": [
+        13,
+        8
+    ],
+    "Flatten": [
+        13,
+        11,
+        9,
+        1
+    ],
+    "Floor": [
+        13,
+        6,
+        1
+    ],
+    "GEMM": [
+        13,
+        11,
+        9,
+        7
+    ],
+    "GlobalAveragePool": [
+        1
+    ],
+    "GlobalLpPool": [
+        2,
+        1
+    ],
+    "GlobalMaxPool": [
+        1
+    ],
+    "Greater": [
+        13,
+        9,
+        7
+    ],
+    "HardSigmoid": [
+        6,
+        1
+    ],
+    "Identity": [
+        14,
+        13,
+        1
+    ],
+    "If": [
+        13,
+        11,
+        1
+    ],
+    "InstanceNormalization": [
+        6,
+        1
+    ],
+    "IsInf": [
+        10
+    ],
+    "IsNaN": [
+        13,
+        9
+    ],
+    "LRN": [
+        13,
+        1
+    ],
+    "LeakyRelu": [
+        6,
+        1
+    ],
+    "Less": [
+        13,
+        9,
+        7
+    ],
+    "Log": [
+        13,
+        6,
+        1
+    ],
+    "MatMul": [
+        13,
+        9,
+        1
+    ],
+    "Max": [
+        13,
+        12,
+        8,
+        6,
+        1
+    ],
+    "MaxPool": [
+        12,
+        11,
+        10,
+        8,
+        1
+    ],
+    "Mean": [
+        13,
+        8,
+        6,
+        1
+    ],
+    "Min": [
+        13,
+        12,
+        8,
+        6,
+        1
+    ],
+    "Mod": [
+        13,
+        10
+    ],
+    "Mul": [
+        14,
+        13,
+        7
+    ],
+    "Multinomial": [
+        7
+    ],
+    "Neg": [
+        13,
+        6,
+        1
+    ],
+    "Not": [
+        1
+    ],
+    "Or": [
+        7
+    ],
+    "PRelu": [
+        9,
+        7,
+        6,
+        1
+    ],
+    "Pow": [
+        13,
+        12,
+        7
+    ],
+    "RandomNormal": [
+        1
+    ],
+    "RandomNormalLike": [
+        1
+    ],
+    "RandomUniform": [
+        1
+    ],
+    "RandomUniformLike": [
+        1
+    ],
+    "Reciprocal": [
+        13,
+        6,
+        1
+    ],
+    "ReduceL1": [
+        13,
+        11,
+        1
+    ],
+    "ReduceL2": [
+        13,
+        11,
+        1
+    ],
+    "ReduceLogSum": [
+        13,
+        11,
+        1
+    ],
+    "ReduceLogSumExp": [
+        13,
+        11,
+        1
+    ],
+    "ReduceMax": [
+        13,
+        12,
+        11,
+        1
+    ],
+    "ReduceMean": [
+        13,
+        11,
+        1
+    ],
+    "ReduceMin": [
+        13,
+        12,
+        11,
+        1
+    ],
+    "ReduceProd": [
+        13,
+        11,
+        1
+    ],
+    "ReduceSum": [
+        13,
+        11,
+        1
+    ],
+    "Relu": [
+        14,
+        13,
+        6,
+        1
+    ],
+    "Reshape": [
+        14,
+        13,
+        5
+    ],
+    "Round": [
+        11
+    ],
+    "Scatter": [
+        11
+    ],
+    "Selu": [
+        6,
+        1
+    ],
+    "Shape": [
+        13,
+        1
+    ],
+    "Shrink": [
+        9
+    ],
+    "Sigmoid": [
+        13,
+        6,
+        1
+    ],
+    "Sign": [
+        13,
+        9
+    ],
+    "Sin": [
+        7
+    ],
+    "Sinh": [
+        9
+    ],
+    "Size": [
+        13,
+        1
+    ],
+    "Softplus": [
+        1
+    ],
+    "Softsign": [
+        1
+    ],
+    "Sqrt": [
+        13,
+        6,
+        1
+    ],
+    "Squeeze": [
+        13
+    ],
+    "Sub": [
+        14,
+        13,
+        7,
+        6
+    ],
+    "Sum": [
+        13,
+        8,
+        6,
+        1
+    ],
+    "Tan": [
+        7
+    ],
+    "Tanh": [
+        6,
+        1
+    ],
+    "ThresholdedRelu": [
+        10
+    ],
+    "Tile": [
+        13,
+        6
+    ],
+    "Transpose": [
+        13,
+        1
+    ],
+    "Unsqueeze": [
+        13
+    ],
+    "Unsample": [
+        10
+    ],
+    "Where": [
+        9
+    ],
+    "Xor": [
+        7
+    ],
+    "Celu": [
+        12
+    ],
+    "GreaterOrEqual": [
+        12
+    ],
+    "LessOrEqual": [
+        12
+    ],
+    "LogSoftmax": [
+        13,
+        11,
+        1
+    ],
+    "Range": [
+        11
+    ],
+    "Softmax": [
+        13,
+        11,
+        1
+    ]
+}

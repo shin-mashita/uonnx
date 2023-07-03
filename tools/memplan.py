@@ -1,6 +1,11 @@
-from planner.proto3_pb2 import Planner
+import sys
+import os
 import onnx
 import numpy as np
+
+from planner.proto3_pb2 import Planner
+
+# Planner format
 
 test_planner = {
     "arena": {
@@ -19,33 +24,31 @@ test_planner = {
     },
 }
 
-def __shash(s: str)->int:
+
+def __shash(s: str) -> int:
     mod = 5381
     mask = 0xFFFFFFFF
     for c in s:
         mod = (mod << 5) + mod + ord(c)
 
     mod = mod & mask
-
-    print(hex(mod))
-
     return mod
 
+
 def __check_unique_shashes(planner: Planner, model: onnx.ModelProto) -> bool:
-    mset  = set()
-    onnx
+    mset = set()
     for plan in planner.plans:
         mset.add(plan.id)
-    
+
     for initializer in model.graph.initializer:
         mset.add(__shash(initializer.name))
-    
+
     if(len(mset) == planner.arena.max_ntensors):
         return 1
     return 0
 
 
-def __tensortype_sizeof(type):
+def __tensortype_sizeof(type: int) -> int:
     dtype_map = {
         0: 0,
         1: 4,
@@ -68,7 +71,8 @@ def __tensortype_sizeof(type):
 
     return dtype_map[type]
 
-def __parse_tensor_data_from_value_info(info) -> dict:
+
+def __parse_tensor_data_from_value_info(info: onnx.ValueInfoProto) -> dict:
     plan = dict()
     plan["start_idx"] = -1
     plan["type"] = info.type.tensor_type.elem_type
@@ -80,7 +84,8 @@ def __parse_tensor_data_from_value_info(info) -> dict:
 
     return plan
 
-def __get_tensor_death(tensor, model):
+
+def __get_tensor_death(tensor: str, model: onnx.ModelProto) -> int:
     for node_idx in range(len(model.graph.node)-1, -1, -1):
         node = model.graph.node[node_idx]
         for input in node.input:
@@ -89,17 +94,19 @@ def __get_tensor_death(tensor, model):
         for output in node.output:
             if output == tensor:
                 return node_idx
-    
+
     return -1
 
-def __in_blocks(tensor, blocks):
-    for name, _ , _ in blocks:
+
+def __in_blocks(tensor: str, blocks: list) -> bool:
+    for name, _, _ in blocks:
         if tensor == name:
             return 1
     return 0
 
-def __get_first_available_pos(tensor_size, blocks):
-    blocks.sort(key=lambda x:x[1])
+
+def __get_first_available_pos(tensor_size: int, blocks: int) -> int:
+    blocks.sort(key=lambda x: x[1])
     pos = 0
     for _, start, size in blocks:
         if pos + tensor_size > start and pos < start + size:
@@ -107,7 +114,7 @@ def __get_first_available_pos(tensor_size, blocks):
     return pos
 
 
-def create_plannerproto(model_file:str) -> Planner:
+def create_plannerproto(model_file: str) -> Planner:
     planner = dict()
 
     model = onnx.load(model_file)
@@ -137,7 +144,7 @@ def create_plannerproto(model_file:str) -> Planner:
         if i.name not in initializers:
             plans[i.name] = __parse_tensor_data_from_value_info(i)
 
-    blocks = [] # [(name, start_idx, size)]
+    blocks = []  # [(name, start_idx, size)]
 
     for node_idx in range(len(model.graph.node)):
         # Get tensors to allocate
@@ -151,11 +158,12 @@ def create_plannerproto(model_file:str) -> Planner:
                 to_allocs.append(output)
 
         to_allocs = [(name, plans[name]["size"]) for name in to_allocs]
-        to_allocs.sort(key=lambda x:x[1], reverse=1)
+        to_allocs.sort(key=lambda x: x[1], reverse=1)
 
         for name, size in to_allocs:
             if not __in_blocks(name, blocks):
-                plans[name]["start_idx"] = __get_first_available_pos(size, blocks)
+                plans[name]["start_idx"] = __get_first_available_pos(
+                    size, blocks)
                 blocks.append((name, plans[name]["start_idx"], size))
 
         for name, start, size in blocks:
@@ -163,8 +171,10 @@ def create_plannerproto(model_file:str) -> Planner:
                 blocks.remove((name, start, size))
 
     planner["arena"] = dict()
-    planner["arena"]["max_ntensors"] = len(plans.keys()) + len(model.graph.initializer)
-    planner["arena"]["max_bytes"]  = max([val['start_idx'] + val['size'] for val in plans.values()])
+    planner["arena"]["max_ntensors"] = len(
+        plans.keys()) + len(model.graph.initializer)
+    planner["arena"]["max_bytes"] = max(
+        [val['start_idx'] + val['size'] for val in plans.values()])
 
     planner["plans"] = plans
 
@@ -186,7 +196,7 @@ def create_plannerproto(model_file:str) -> Planner:
         print("Collision occurred between tensor names hashes. Use another modulus.")
 
 
-def create_plannerproto_file(model_file: str, target:str=""):
+def create_plannerproto_file(model_file: str, target: str = ""):
     planner = create_plannerproto(model_file)
 
     if target == "":
@@ -215,15 +225,3 @@ def read_pbfile(filename: str):
         for dim in plan.dims:
             mdims.append(dim)
         print("\t\tdims:", mdims)
-    
-
-# TODO PLANNER Viz
-
-if __name__ == "__main__":
-    create_plannerproto_file("reference.onnx")
-    read_pbfile("reference_planner.pb")
-
-
-# MNIST: 505 B -> 248 B
-# KWS: 3.1 KB -> 445 B
-# VWW: 7.5 KB -> 1.1 KB

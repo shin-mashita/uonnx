@@ -1,5 +1,7 @@
 #include "uonnx.h"
 
+#ifdef UONNX_OPS_MATMUL
+
 struct operator_pdata_t {
 	int m;
 	int n;
@@ -446,3 +448,5 @@ void resolver_default_op_MatMul(Node * n)
 		}
 	}
 }
+
+#endif

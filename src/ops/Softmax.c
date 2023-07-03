@@ -1,5 +1,7 @@
 #include "uonnx.h"
 
+#ifdef UONNX_OPS_SOFTMAX
+
 struct operator_13_pdata_t
 {
 	int axis;
@@ -463,3 +465,5 @@ void resolver_default_op_Softmax(Node * n)
 		}
 	}
 }
+
+#endif

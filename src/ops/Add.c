@@ -1,5 +1,7 @@
 #include "uonnx.h"
 
+#ifdef UONNX_OPS_ADD
+
 static int Add_init(Node * n)
 {
 	if((n->ninputs == 2) && (n->noutputs == 1))
@@ -420,3 +422,5 @@ void resolver_default_op_Add(Node * n)
 	{
 	}
 }
+
+#endif

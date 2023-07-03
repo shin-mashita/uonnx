@@ -6,10 +6,16 @@ extern "C" {
 #endif
 
 /* UONNX DEFINES HERE */
-#define UONNX_OPS_ABS
 #define UONNX_OPS_ADD
-#define UONNX_DTYPE_FP32
-#define UONNX_DTYPE_FP16 // TODO: add more defines here for conditional compilation
+#define UONNX_OPS_AVERAGEPOOL
+#define UONNX_OPS_CONV
+#define UONNX_OPS_GEMM
+#define UONNX_OPS_MATMUL
+#define UONNX_OPS_MAXPOOL
+#define UONNX_OPS_RELU
+#define UONNX_OPS_RESHAPE
+#define UONNX_OPS_SOFTMAX
+#define UONNX_OPS_TRANSPOSE
 
 /* CORES */
 #include "uonnx_config.h"

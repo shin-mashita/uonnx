@@ -1,5 +1,7 @@
 #include "uonnx.h"
 
+#ifdef UONNX_OPS_TRANSPOSE
+
 struct operator_pdata_t {
 	int * perm;
 	int nperm;
@@ -632,3 +634,5 @@ void resolver_default_op_Transpose(Node * n)
 		}
 	}
 }
+
+#endif

@@ -63,8 +63,7 @@ $(LIBPATH):$(COBJS)
 # Rule for making apps
 run: $(COBJS) $(APPOBJS)
 	@echo [LD] Linking $(APP)
-	@$(CC) -o $(BUILDDIR)/$(APP).out $(OBJS) $(CFLAGS) $(INCDIRS) $(LIBS) 
-# -static
+	@$(CC) -o $(BUILDDIR)/$(APP).out $(OBJS) $(CFLAGS) $(INCDIRS) $(LIBS) -static
 	@echo
 	@echo [MK] App executable found at $(BUILDDIR)/$(APP).out
 	@echo
@@ -77,34 +76,38 @@ benchmark:
 ifeq (mnist, $(filter mnist,$(MAKECMDGOALS)))
 	@clear
 	@echo [MK] Compiling mnist benchmark...
+	@make prep MODEL=examples/benchmarks/cpu/mnist/mnist.onnx
 	@make run APP=examples/benchmarks/cpu/mnist
 	@echo [MK] Running mnist benchmark on CPU...
 	@./build/examples/benchmarks/cpu/mnist.out
 else ifeq (kws, $(filter kws,$(MAKECMDGOALS)))
 	@clear
 	@echo [MK] Compiling kws benchmark...
+	@make prep MODEL=examples/benchmarks/cpu/kws/kws_float32_9.onnx
 	@make run APP=examples/benchmarks/cpu/kws
 	@echo [MK] Running kws benchmark on CPU...
 	@./build/examples/benchmarks/cpu/kws.out
+	@make clean
 else ifeq (vww, $(filter vww,$(MAKECMDGOALS)))
 	@clear
 	@echo [MK] Compiling vww benchmark...
+	@make prep MODEL=examples/benchmarks/cpu/vww/vww_float32_9.onnx
 	@make run APP=examples/benchmarks/cpu/vww
 	@echo [MK] Running vww benchmark on CPU...
 	@./build/examples/benchmarks/cpu/vww.out
+	@make clean
 else
 	@clear
 	@echo [MK] Compiling reference benchmark...
+	@make prep MODEL=examples/benchmarks/cpu/ref/reference.onnx
 	@make run APP=examples/benchmarks/cpu/ref
 	@echo [MK] Running ref benchmark on CPU...
 	@./build/examples/benchmarks/cpu/ref.out
+	@make clean
 endif
 
-header:
-	@echo "#ifndef __$(subst .,_,$(notdir $(shell echo $(MODEL) | tr a-z A-Z)))__"
-	@echo "#define __$(subst .,_,$(notdir $(shell echo $(MODEL) | tr a-z A-Z)))__"
-	@echo
-	@xxd -i $(MODEL)
+prep:
+	@python tools/preprocessor.py --model ./${MODEL}
 
 # Rule for linking app with lib
 run_with_lib: lib $(APPOBJS)
@@ -117,6 +120,7 @@ run_with_lib: lib $(APPOBJS)
 # Rule for cleaning ./build
 clean:
 	@rm -rf $(BUILDDIR)
+	@python tools/preprocessor.py --restore
 
 # Run scratch example. Use this for future example.
 test_scratch: clean run
