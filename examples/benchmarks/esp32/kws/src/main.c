@@ -5,7 +5,7 @@
 #include "esp_log.h"
 #include "sdkconfig.h"
 
-#include <uonnx.h>
+#include "uonnx.h"
 #include <kws_float32_9_onnx.h>
 
 #define UONNX_ON_BREAKDOWN

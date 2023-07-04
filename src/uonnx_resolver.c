@@ -523,7 +523,9 @@ Resolver resolver_default =
     .create							= resolver_default_create,
     .destroy						= resolver_default_destroy,
 
-    // .op_Abs							= resolver_default_op_Abs,
+    #ifdef UONNX_OPS_ABS
+    .op_Abs							= resolver_default_op_Abs,
+    #endif
     // .op_Acos						= resolver_default_op_Acos,
     // .op_Acosh						= resolver_default_op_Acosh,
 

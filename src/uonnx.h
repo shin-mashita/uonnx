@@ -6,7 +6,17 @@ extern "C" {
 #endif
 
 /* UONNX DEFINES HERE */
+#define UONNX_OPS_ABS
+#define UONNX_OPS_ACOS
+#define UONNX_OPS_ACOSH
 #define UONNX_OPS_ADD
+#define UONNX_OPS_AND
+#define UONNX_OPS_ARGMAX
+#define UONNX_OPS_ARGMIN
+#define UONNX_OPS_ASIN
+#define UONNX_OPS_ASINH
+#define UONNX_OPS_ATAN
+#define UONNX_OPS_ATANH
 #define UONNX_OPS_AVERAGEPOOL
 #define UONNX_OPS_CONV
 #define UONNX_OPS_GEMM

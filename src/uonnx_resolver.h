@@ -188,21 +188,49 @@ void resolver_solve_operator(Resolver * r, Node * n);
 void * resolver_default_create(void);
 void resolver_default_destroy(void * rctx);
 
-// void resolver_default_op_Abs(Node * n);
-// void resolver_default_op_Acos(Node * n);
-// void resolver_default_op_Acosh(Node * n);
+#ifdef UONNX_OPS_ABS
+void resolver_default_op_Abs(Node * n);
+#endif
+
+#ifdef UONNX_OPS_ACOS
+void resolver_default_op_Acos(Node * n);
+#endif
+
+#ifdef UONNX_OPS_ACOSH
+void resolver_default_op_Acosh(Node * n);
+#endif
 
 #ifdef UONNX_OPS_ADD
 void resolver_default_op_Add(Node * n);
 #endif
 
-// void resolver_default_op_And(Node * n);
-// void resolver_default_op_ArgMax(Node * n);
-// void resolver_default_op_ArgMin(Node * n);
-// void resolver_default_op_Asin(Node * n);
-// void resolver_default_op_Asinh(Node * n);
-// void resolver_default_op_Atan(Node * n);
-// void resolver_default_op_Atanh(Node * n);
+#ifdef UONNX_OPS_AND
+void resolver_default_op_And(Node * n);
+#endif
+
+#ifdef UONNX_OPS_ARGMAX
+void resolver_default_op_ArgMax(Node * n);
+#endif
+
+#ifdef UONNX_OPS_ARGMIN
+void resolver_default_op_ArgMin(Node * n);
+#endif
+
+#ifdef UONNX_OPS_ASIN
+void resolver_default_op_Asin(Node * n);
+#endif
+
+#ifdef UONNX_OPS_ASINH
+void resolver_default_op_Asinh(Node * n);
+#endif
+
+#ifdef UONNX_OPS_ATAN
+void resolver_default_op_Atan(Node * n);
+#endif
+
+#ifdef
+void resolver_default_op_Atanh(Node * n);
+#endif
 
 #ifdef UONNX_OPS_AVERAGEPOOL
 void resolver_default_op_AveragePool(Node * n);
