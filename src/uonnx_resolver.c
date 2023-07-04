@@ -526,20 +526,46 @@ Resolver resolver_default =
     #ifdef UONNX_OPS_ABS
     .op_Abs							= resolver_default_op_Abs,
     #endif
-    // .op_Acos						= resolver_default_op_Acos,
-    // .op_Acosh						= resolver_default_op_Acosh,
+
+    #ifdef UONNX_OPS_ACOS
+    .op_Acos						= resolver_default_op_Acos,
+    #endif
+
+    #ifdef UONNX_OPS_ACOSH
+    .op_Acosh						= resolver_default_op_Acosh,
+    #endif
 
     #ifdef UONNX_OPS_ADD
     .op_Add							= resolver_default_op_Add,
     #endif
 
-    // .op_And							= resolver_default_op_And,
-    // .op_ArgMax						= resolver_default_op_ArgMax,
-    // .op_ArgMin						= resolver_default_op_ArgMin,
-    // .op_Asin						= resolver_default_op_Asin,
-    // .op_Asinh						= resolver_default_op_Asinh,
-    // .op_Atan						= resolver_default_op_Atan,
-    // .op_Atanh						= resolver_default_op_Atanh,
+    #ifdef UONNX_OPS_AND
+    .op_And							= resolver_default_op_And,
+    #endif
+
+    #ifdef UONNX_OPS_ARGMAX
+    .op_ArgMax						= resolver_default_op_ArgMax,
+    #endif
+
+    #ifdef UONNX_OPS_ARGMIN
+    .op_ArgMin						= resolver_default_op_ArgMin,
+    #endif
+
+    #ifdef UONNX_OPS_ASIN
+    .op_Asin						= resolver_default_op_Asin,
+    #endif
+
+    #ifdef UONNX_OPS_ASINH
+    .op_Asinh						= resolver_default_op_Asinh,
+    #endif
+
+    #ifdef UONNX_OPS_ATAN
+    .op_Atan						= resolver_default_op_Atan,
+    #endif
+
+    #ifdef UONNX_OPS_ATANH
+    .op_Atanh						= resolver_default_op_Atanh,
+    #endif
 
     #ifdef UONNX_OPS_AVERAGEPOOL
     .op_AveragePool					= resolver_default_op_AveragePool,
@@ -548,7 +574,11 @@ Resolver resolver_default =
     // .op_BatchNormalization			= resolver_default_op_BatchNormalization,
     // .op_BitShift					= resolver_default_op_BitShift,
     // .op_Cast						= resolver_default_op_Cast,
-    // .op_Ceil						= resolver_default_op_Ceil,
+
+    #ifdef UONNX_OPS_CEIL
+    .op_Ceil						= resolver_default_op_Ceil,
+    #endif
+
     // .op_Clip						= resolver_default_op_Clip,
     // .op_Compress					= resolver_default_op_Compress,
     // .op_Concat						= resolver_default_op_Concat,
@@ -562,8 +592,15 @@ Resolver resolver_default =
 
     // .op_ConvInteger					= resolver_default_op_ConvInteger,
     // .op_ConvTranspose				= resolver_default_op_ConvTranspose,
-    // .op_Cos							= resolver_default_op_Cos,
-    // .op_Cosh						= resolver_default_op_Cosh,
+
+    #ifdef UONNX_OPS_COS
+    .op_Cos							= resolver_default_op_Cos,
+    #endif
+
+    #ifdef UONNX_OPS_COSH
+    .op_Cosh						= resolver_default_op_Cosh,
+    #endif
+
     // .op_CumSum						= resolver_default_op_CumSum,
     // .op_DepthToSpace				= resolver_default_op_DepthToSpace,
     // .op_DequantizeLinear			= resolver_default_op_DequantizeLinear,
@@ -571,14 +608,31 @@ Resolver resolver_default =
     // .op_Div							= resolver_default_op_Div,
     // .op_Dropout						= resolver_default_op_Dropout,
     // .op_Einsum						= resolver_default_op_Einsum,
-    // .op_Elu							= resolver_default_op_Elu,
-    // .op_Equal						= resolver_default_op_Equal,
-    // .op_Erf							= resolver_default_op_Erf,
-    // .op_Exp							= resolver_default_op_Exp,
+
+    #ifdef UONNX_OPS_ELU
+    .op_Elu							= resolver_default_op_Elu,
+    #endif
+
+    #ifdef UONNX_OPS_EQUAL
+    .op_Equal						= resolver_default_op_Equal,
+    #endif
+
+    #ifdef UONNX_OPS_ERF
+    .op_Erf							= resolver_default_op_Erf,
+    #endif
+
+    #ifdef UONNX_OPS_EXP
+    .op_Exp							= resolver_default_op_Exp,
+    #endif
+
     // .op_Expand						= resolver_default_op_Expand,
     // .op_EyeLike						= resolver_default_op_EyeLike,
     // .op_Flatten						= resolver_default_op_Flatten,
-    // .op_Floor						= resolver_default_op_Floor,
+
+    #ifdef UONNX_OPS_FLOOR
+    .op_Floor						= resolver_default_op_Floor,
+    #endif
+
     // .op_GRU							= resolver_default_op_GRU,
     // .op_Gather						= resolver_default_op_Gather,
     // .op_GatherElements				= resolver_default_op_GatherElements,
@@ -586,11 +640,27 @@ Resolver resolver_default =
     #ifdef UONNX_OPS_GEMM
     .op_Gemm						= resolver_default_op_Gemm,
     #endif
-    // .op_GlobalAveragePool			= resolver_default_op_GlobalAveragePool,
-    // .op_GlobalLpPool				= resolver_default_op_GlobalLpPool,
-    // .op_GlobalMaxPool				= resolver_default_op_GlobalMaxPool,
-    // .op_Greater						= resolver_default_op_Greater,
-    // .op_HardSigmoid					= resolver_default_op_HardSigmoid,
+
+    #ifdef UONNX_OPS_GLOBALAVERAGEPOOL
+    .op_GlobalAveragePool			= resolver_default_op_GlobalAveragePool,
+    #endif
+
+    #ifdef UONNX_OPS_GLOBALLPPOOL
+    .op_GlobalLpPool				= resolver_default_op_GlobalLpPool,
+    #endif
+
+    #ifdef UONNX_OPS_GLOBALMAXPOOL
+    .op_GlobalMaxPool				= resolver_default_op_GlobalMaxPool,
+    #endif
+
+    #ifdef UONNX_OPS_GREATER
+    .op_Greater						= resolver_default_op_Greater,
+    #endif
+
+    #ifdef UONNX_OPS_HARDSIGMOID
+    .op_HardSigmoid					= resolver_default_op_HardSigmoid,
+    #endif
+
     // .op_Hardmax						= resolver_default_op_Hardmax,
     // .op_Identity					= resolver_default_op_Identity,
     // .op_If							= resolver_default_op_If,
@@ -599,9 +669,19 @@ Resolver resolver_default =
     // .op_IsNaN						= resolver_default_op_IsNaN,
     // .op_LRN							= resolver_default_op_LRN,
     // .op_LSTM						= resolver_default_op_LSTM,
-    // .op_LeakyRelu					= resolver_default_op_LeakyRelu,
-    // .op_Less						= resolver_default_op_Less,
-    // .op_Log							= resolver_default_op_Log,
+
+    #ifdef UONNX_OPS_LEAKYRELU
+    .op_LeakyRelu					= resolver_default_op_LeakyRelu,
+    #endif
+
+    #ifdef UONNX_OPS_LESS
+    .op_Less						= resolver_default_op_Less,
+    #endif
+
+    #ifdef UONNX_OPS_LOG
+    .op_Log							= resolver_default_op_Log,
+    #endif
+
     // .op_Loop						= resolver_default_op_Loop,
     // .op_LpNormalization				= resolver_default_op_LpNormalization,
     // .op_LpPool						= resolver_default_op_LpPool,
@@ -611,27 +691,56 @@ Resolver resolver_default =
     #endif 
 
     // .op_MatMulInteger				= resolver_default_op_MatMulInteger,
-    // .op_Max							= resolver_default_op_Max,
+
+    #ifdef UONNX_OPS_MAX
+    .op_Max							= resolver_default_op_Max,
+    #endif
 
     #ifdef UONNX_OPS_MAXPOOL
     .op_MaxPool						= resolver_default_op_MaxPool,
     #endif
+
     // .op_MaxRoiPool					= resolver_default_op_MaxRoiPool,
     // .op_MaxUnpool					= resolver_default_op_MaxUnpool,
-    // .op_Mean						= resolver_default_op_Mean,
-    // .op_Min							= resolver_default_op_Min,
-    // .op_Mod							= resolver_default_op_Mod,
-    // .op_Mul							= resolver_default_op_Mul,
+
+    #ifdef UONNX_OPS_MEAN
+    .op_Mean						= resolver_default_op_Mean,
+    #endif
+
+    #ifdef UONNX_OPS_MIN
+    .op_Min							= resolver_default_op_Min,
+    #endif
+    
+    #ifdef UONNX_OPS_MOD
+    .op_Mod							= resolver_default_op_Mod,
+    #endif
+
+    #ifdef UONNX_OPS_MUL
+    .op_Mul							= resolver_default_op_Mul,
+    #endif
+
     // .op_Multinomial					= resolver_default_op_Multinomial,
-    // .op_Neg							= resolver_default_op_Neg,
+
+    #ifdef UONNX_OPS_NEG
+    .op_Neg							= resolver_default_op_Neg,
+    #endif
+
     // .op_NonMaxSuppression			= resolver_default_op_NonMaxSuppression,
     // .op_NonZero						= resolver_default_op_NonZero,
     // .op_Not							= resolver_default_op_Not,
     // .op_OneHot						= resolver_default_op_OneHot,
     // .op_Or							= resolver_default_op_Or,
-    // .op_PRelu						= resolver_default_op_PRelu,
+
+    #ifdef UONNX_OPS_PRELU
+    .op_PRelu						= resolver_default_op_PRelu,
+    #endif
+
     // .op_Pad							= resolver_default_op_Pad,
-    // .op_Pow							= resolver_default_op_Pow,
+    
+    #ifdef UONNX_OPS_POW
+    .op_Pow							= resolver_default_op_Pow,
+    #endif
+
     // .op_QLinearConv					= resolver_default_op_QLinearConv,
     // .op_QLinearMatMul				= resolver_default_op_QLinearMatMul,
     // .op_QuantizeLinear				= resolver_default_op_QuantizeLinear,
@@ -668,7 +777,11 @@ Resolver resolver_default =
     // .op_Scatter						= resolver_default_op_Scatter,
     // .op_ScatterElements				= resolver_default_op_ScatterElements,
     // .op_ScatterND					= resolver_default_op_ScatterND,
-    // .op_Selu						= resolver_default_op_Selu,
+
+    #ifdef UONNX_OPS_SELU
+    .op_Selu						= resolver_default_op_Selu,
+    #endif
+
     // .op_SequenceAt					= resolver_default_op_SequenceAt,
     // .op_SequenceConstruct			= resolver_default_op_SequenceConstruct,
     // .op_SequenceEmpty				= resolver_default_op_SequenceEmpty,
@@ -677,10 +790,23 @@ Resolver resolver_default =
     // .op_SequenceLength				= resolver_default_op_SequenceLength,
     // .op_Shape						= resolver_default_op_Shape,
     // .op_Shrink						= resolver_default_op_Shrink,
-    // .op_Sigmoid						= resolver_default_op_Sigmoid,
-    // .op_Sign						= resolver_default_op_Sign,
-    // .op_Sin							= resolver_default_op_Sin,
-    // .op_Sinh						= resolver_default_op_Sinh,
+
+    #ifdef UONNX_OPS_SIGMOID
+    .op_Sigmoid						= resolver_default_op_Sigmoid,
+    #endif
+
+    #ifdef UONNX_OPS_SIGN
+    .op_Sign						= resolver_default_op_Sign,
+    #endif
+
+    #ifdef UONNX_OPS_SIN
+    .op_Sin							= resolver_default_op_Sin,
+    #endif
+
+    #ifdef UONNX_OPS_SINH
+    .op_Sinh						= resolver_default_op_Sinh,
+    #endif
+
     // .op_Size						= resolver_default_op_Size,
     // .op_Slice						= resolver_default_op_Slice,
     // .op_Softplus					= resolver_default_op_Softplus,
@@ -691,10 +817,23 @@ Resolver resolver_default =
     // .op_Sqrt						= resolver_default_op_Sqrt,
     // .op_Squeeze						= resolver_default_op_Squeeze,
     // .op_StringNormalizer			= resolver_default_op_StringNormalizer,
-    // .op_Sub							= resolver_default_op_Sub,
-    // .op_Sum							= resolver_default_op_Sum,
-    // .op_Tan							= resolver_default_op_Tan,
-    // .op_Tanh						= resolver_default_op_Tanh,
+
+    #ifdef UONNX_OPS_SUB
+    .op_Sub							= resolver_default_op_Sub,
+    #endif
+
+    #ifdef UONNX_OPS_SUM
+    .op_Sum							= resolver_default_op_Sum,
+    #endif
+
+    #ifdef UONNX_OPS_TAN
+    .op_Tan							= resolver_default_op_Tan,
+    #endif
+
+    #ifdef UONNX_OPS_TANH
+    .op_Tanh						= resolver_default_op_Tanh,
+    #endif
+
     // .op_TfIdfVectorizer				= resolver_default_op_TfIdfVectorizer,
     // .op_ThresholdedRelu				= resolver_default_op_ThresholdedRelu,
     // .op_Tile						= resolver_default_op_Tile,
@@ -711,12 +850,25 @@ Resolver resolver_default =
     // .op_Where						= resolver_default_op_Where,
     // .op_Xor							= resolver_default_op_Xor,
 
-    // .op_Celu						= resolver_default_op_Celu,
+    #ifdef UONNX_OPS_CELU
+    .op_Celu						= resolver_default_op_Celu,
+    #endif
+
     // .op_DynamicQuantizeLinear		= resolver_default_op_DynamicQuantizeLinear,
-    // .op_GreaterOrEqual				= resolver_default_op_GreaterOrEqual,
+
+    #ifdef UONNX_OPS_GREATEROREQUAL
+    .op_GreaterOrEqual				= resolver_default_op_GreaterOrEqual,
+    #endif
+
     // .op_HardSwish					= resolver_default_op_HardSwish,
-    // .op_LessOrEqual					= resolver_default_op_LessOrEqual,
-    // .op_LogSoftmax					= resolver_default_op_LogSoftmax,
+
+    #ifdef UONNX_OPS_LESSOREQUAL
+    .op_LessOrEqual					= resolver_default_op_LessOrEqual,
+    #endif
+
+    #ifdef UONNX_OPS_LOGSOFTMAX
+    .op_LogSoftmax					= resolver_default_op_LogSoftmax,
+    #endif
     // .op_MeanVarianceNormalization	= resolver_default_op_MeanVarianceNormalization,
     // .op_NegativeLogLikelihoodLoss	= resolver_default_op_NegativeLogLikelihoodLoss,
     // .op_Range						= resolver_default_op_Range,

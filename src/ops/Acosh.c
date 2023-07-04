@@ -1,4 +1,6 @@
 #include "uonnx.h"
+
+#ifdef UONNX_OPS_ACOSH
 static int Acosh_init(Node * n)
 {
 	if((n->ninputs == 1) && (n->noutputs == 1))
@@ -88,3 +90,4 @@ void resolver_default_op_Acosh(Node * n)
 		}
 	}
 }
+#endif

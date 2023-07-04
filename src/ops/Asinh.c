@@ -1,5 +1,6 @@
 #include "uonnx.h"
 
+#ifdef UONNX_OPS_ASINH
 static int Asinh_init(Node * n)
 {
 	if((n->ninputs == 1) && (n->noutputs == 1))
@@ -86,3 +87,4 @@ void resolver_default_op_Asinh(Node * n)
 		}
 	}
 }
+#endif

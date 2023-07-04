@@ -228,7 +228,7 @@ void resolver_default_op_Asinh(Node * n);
 void resolver_default_op_Atan(Node * n);
 #endif
 
-#ifdef
+#ifdef UONNX_OPS_ATANH
 void resolver_default_op_Atanh(Node * n);
 #endif
 
@@ -239,7 +239,11 @@ void resolver_default_op_AveragePool(Node * n);
 // void resolver_default_op_BatchNormalization(Node * n);
 // void resolver_default_op_BitShift(Node * n);
 // void resolver_default_op_Cast(Node * n);
-// void resolver_default_op_Ceil(Node * n);
+
+#ifdef UONNX_OPS_CEIL
+void resolver_default_op_Ceil(Node * n);
+#endif
+
 // void resolver_default_op_Clip(Node * n);
 // void resolver_default_op_Compress(Node * n);
 // void resolver_default_op_Concat(Node * n);
@@ -253,8 +257,15 @@ void resolver_default_op_Conv(Node * n);
 
 // void resolver_default_op_ConvInteger(Node * n);
 // void resolver_default_op_ConvTranspose(Node * n);
-// void resolver_default_op_Cos(Node * n);
-// void resolver_default_op_Cosh(Node * n);
+
+#ifdef UONNX_OPS_COS
+void resolver_default_op_Cos(Node * n);
+#endif
+
+#ifdef UONNX_OPS_COSH
+void resolver_default_op_Cosh(Node * n);
+#endif
+
 // void resolver_default_op_CumSum(Node * n);
 // void resolver_default_op_DepthToSpace(Node * n);
 // void resolver_default_op_DequantizeLinear(Node * n);
@@ -262,14 +273,30 @@ void resolver_default_op_Conv(Node * n);
 // void resolver_default_op_Div(Node * n);
 // void resolver_default_op_Dropout(Node * n);
 // void resolver_default_op_Einsum(Node * n);
-// void resolver_default_op_Elu(Node * n);
-// void resolver_default_op_Equal(Node * n);
-// void resolver_default_op_Erf(Node * n);
-// void resolver_default_op_Exp(Node * n);
+
+#ifdef UONNX_OPS_ELU
+void resolver_default_op_Elu(Node * n);
+#endif
+
+#ifdef UONNX_OPS_EQUAL
+void resolver_default_op_Equal(Node * n);
+#endif
+
+#ifdef UONNX_OPS_ERF
+void resolver_default_op_Erf(Node * n);
+#endif
+
+#ifdef UONNX_OPS_EXP
+void resolver_default_op_Exp(Node * n);
+#endif
 // void resolver_default_op_Expand(Node * n);
 // void resolver_default_op_EyeLike(Node * n);
 // void resolver_default_op_Flatten(Node * n);
-// void resolver_default_op_Floor(Node * n);
+
+#ifdef UONNX_OPS_FLOOR
+void resolver_default_op_Floor(Node * n);
+#endif
+
 // void resolver_default_op_GRU(Node * n);
 // void resolver_default_op_Gather(Node * n);
 // void resolver_default_op_GatherElements(Node * n);
@@ -279,11 +306,26 @@ void resolver_default_op_Conv(Node * n);
 void resolver_default_op_Gemm(Node * n);
 #endif
 
-// void resolver_default_op_GlobalAveragePool(Node * n);
-// void resolver_default_op_GlobalLpPool(Node * n);
-// void resolver_default_op_GlobalMaxPool(Node * n);
-// void resolver_default_op_Greater(Node * n);
-// void resolver_default_op_HardSigmoid(Node * n);
+#ifdef UONNX_OPS_GLOBALAVERAGEPOOL
+void resolver_default_op_GlobalAveragePool(Node * n);
+#endif
+
+#ifdef UONNX_OPS_GLOBALLPPOOL
+void resolver_default_op_GlobalLpPool(Node * n);
+#endif
+
+#ifdef UONNX_OPS_GLOBALMAXPOOL
+void resolver_default_op_GlobalMaxPool(Node * n);
+#endif
+
+#ifdef UONNX_OPS_GREATER
+void resolver_default_op_Greater(Node * n);
+#endif
+
+#ifdef UONNX_OPS_HARDSIGMOID
+void resolver_default_op_HardSigmoid(Node * n);
+#endif
+
 // void resolver_default_op_Hardmax(Node * n);
 // void resolver_default_op_Identity(Node * n);
 // void resolver_default_op_If(Node * n);
@@ -292,9 +334,19 @@ void resolver_default_op_Gemm(Node * n);
 // void resolver_default_op_IsNaN(Node * n);
 // void resolver_default_op_LRN(Node * n);
 // void resolver_default_op_LSTM(Node * n);
-// void resolver_default_op_LeakyRelu(Node * n);
-// void resolver_default_op_Less(Node * n);
-// void resolver_default_op_Log(Node * n);
+
+#ifdef UONNX_OPS_LEAKYRELU
+void resolver_default_op_LeakyRelu(Node * n);
+#endif
+
+#ifdef UONNX_OPS_LESS
+void resolver_default_op_Less(Node * n);
+#endif
+
+#ifdef UONNX_OPS_LOG
+void resolver_default_op_Log(Node * n);
+#endif
+
 // void resolver_default_op_Loop(Node * n);
 // void resolver_default_op_LpNormalization(Node * n);
 // void resolver_default_op_LpPool(Node * n);
@@ -304,7 +356,10 @@ void resolver_default_op_MatMul(Node * n);
 #endif
 
 // void resolver_default_op_MatMulInteger(Node * n);
-// void resolver_default_op_Max(Node * n);
+
+#ifdef UONNX_OPS_MAX
+void resolver_default_op_Max(Node * n);
+#endif
 
 #ifdef UONNX_OPS_MAXPOOL
 void resolver_default_op_MaxPool(Node * n);
@@ -312,20 +367,45 @@ void resolver_default_op_MaxPool(Node * n);
 
 // void resolver_default_op_MaxRoiPool(Node * n);
 // void resolver_default_op_MaxUnpool(Node * n);
-// void resolver_default_op_Mean(Node * n);
-// void resolver_default_op_Min(Node * n);
-// void resolver_default_op_Mod(Node * n);
-// void resolver_default_op_Mul(Node * n);
+
+#ifdef UONNX_OPS_MEAN
+void resolver_default_op_Mean(Node * n);
+#endif
+
+#ifdef UONNX_OPS_MIN
+void resolver_default_op_Min(Node * n);
+#endif
+
+#ifdef UONNX_OPS_MOD
+void resolver_default_op_Mod(Node * n);
+#endif
+
+#ifdef UONNX_OPS_MUL
+void resolver_default_op_Mul(Node * n);
+#endif
+
 // void resolver_default_op_Multinomial(Node * n);
-// void resolver_default_op_Neg(Node * n);
+
+#ifdef UONNX_OPS_NEG
+void resolver_default_op_Neg(Node * n);
+#endif
+
 // void resolver_default_op_NonMaxSuppression(Node * n);
 // void resolver_default_op_NonZero(Node * n);
 // void resolver_default_op_Not(Node * n);
 // void resolver_default_op_OneHot(Node * n);
 // void resolver_default_op_Or(Node * n);
-// void resolver_default_op_PRelu(Node * n);
+
+#ifdef UONNX_OPS_PRELU
+void resolver_default_op_PRelu(Node * n);
+#endif
+
 // void resolver_default_op_Pad(Node * n);
-// void resolver_default_op_Pow(Node * n);
+
+#ifdef UONNX_OPS_POW
+void resolver_default_op_Pow(Node * n);
+#endif
+
 // void resolver_default_op_QLinearConv(Node * n);
 // void resolver_default_op_QLinearMatMul(Node * n);
 // void resolver_default_op_QuantizeLinear(Node * n);
@@ -362,7 +442,11 @@ void resolver_default_op_Reshape(Node * n);
 // void resolver_default_op_Scatter(Node * n);
 // void resolver_default_op_ScatterElements(Node * n);
 // void resolver_default_op_ScatterND(Node * n);
-// void resolver_default_op_Selu(Node * n);
+
+#ifdef UONNX_OPS_SELU
+void resolver_default_op_Selu(Node * n);
+#endif
+
 // void resolver_default_op_SequenceAt(Node * n);
 // void resolver_default_op_SequenceConstruct(Node * n);
 // void resolver_default_op_SequenceEmpty(Node * n);
@@ -371,10 +455,23 @@ void resolver_default_op_Reshape(Node * n);
 // void resolver_default_op_SequenceLength(Node * n);
 // void resolver_default_op_Shape(Node * n);
 // void resolver_default_op_Shrink(Node * n);
-// void resolver_default_op_Sigmoid(Node * n);
-// void resolver_default_op_Sign(Node * n);
-// void resolver_default_op_Sin(Node * n);
-// void resolver_default_op_Sinh(Node * n);
+
+#ifdef UONNX_OPS_SIGMOID
+void resolver_default_op_Sigmoid(Node * n);
+#endif
+
+#ifdef UONNX_OPS_SIGN
+void resolver_default_op_Sign(Node * n);
+#endif
+
+#ifdef UONNX_OPS_SIN
+void resolver_default_op_Sin(Node * n);
+#endif
+
+#ifdef UONNX_OPS_SINH
+void resolver_default_op_Sinh(Node * n);
+#endif
+
 // void resolver_default_op_Size(Node * n);
 // void resolver_default_op_Slice(Node * n);
 // void resolver_default_op_Softplus(Node * n);
@@ -385,10 +482,23 @@ void resolver_default_op_Reshape(Node * n);
 // void resolver_default_op_Sqrt(Node * n);
 // void resolver_default_op_Squeeze(Node * n);
 // void resolver_default_op_StringNormalizer(Node * n);
-// void resolver_default_op_Sub(Node * n);
-// void resolver_default_op_Sum(Node * n);
-// void resolver_default_op_Tan(Node * n);
-// void resolver_default_op_Tanh(Node * n);
+
+#ifdef UONNX_OPS_SUB
+void resolver_default_op_Sub(Node * n);
+#endif
+
+#ifdef UONNX_OPS_SUM
+void resolver_default_op_Sum(Node * n);
+#endif
+
+#ifdef UONNX_OPS_TAN
+void resolver_default_op_Tan(Node * n);
+#endif
+
+#ifdef UONNX_OPS_TANH
+void resolver_default_op_Tanh(Node * n);
+#endif
+
 // void resolver_default_op_TfIdfVectorizer(Node * n);
 // void resolver_default_op_ThresholdedRelu(Node * n);
 // void resolver_default_op_Tile(Node * n);
@@ -405,12 +515,26 @@ void resolver_default_op_Transpose(Node * n);
 // void resolver_default_op_Where(Node * n);
 // void resolver_default_op_Xor(Node * n);
 
-// void resolver_default_op_Celu(Node * n);
+#ifdef UONNX_OPS_CELU
+void resolver_default_op_Celu(Node * n);
+#endif
+
 // void resolver_default_op_DynamicQuantizeLinear(Node * n);
-// void resolver_default_op_GreaterOrEqual(Node * n);
+
+#ifdef UONNX_OPS_GREATEROREQUAL
+void resolver_default_op_GreaterOrEqual(Node * n);
+#endif
+
 // void resolver_default_op_HardSwish(Node * n);
-// void resolver_default_op_LessOrEqual(Node * n);
-// void resolver_default_op_LogSoftmax(Node * n);
+
+#ifdef UONNX_OPS_LESSOREQUAL
+void resolver_default_op_LessOrEqual(Node * n);
+#endif
+
+#ifdef UONNX_OPS_LOGSOFTMAX
+void resolver_default_op_LogSoftmax(Node * n);
+#endif
+
 // void resolver_default_op_MeanVarianceNormalization(Node * n);
 // void resolver_default_op_NegativeLogLikelihoodLoss(Node * n);
 // void resolver_default_op_Range(Node * n);

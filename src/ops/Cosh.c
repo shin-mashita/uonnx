@@ -1,19 +1,20 @@
 #include "uonnx.h"
 
-#ifdef UONNX_OPS_ASIN
-static int Asin_init(Node * n)
+#ifdef UONNX_OPS_COSH
+
+static int Cosh_init(Node * n)
 {
 	if((n->ninputs == 1) && (n->noutputs == 1))
 		return 1;
 	return 0;
 }
 
-static int Asin_exit(Node * n)
+static int Cosh_exit(Node * n)
 {
 	return 1;
 }
 
-static int Asin_reshape(Node * n)
+static int Cosh_reshape(Node * n)
 {
 	Tensor * x = n->inputs[0];
 	Tensor * y = n->outputs[0];
@@ -21,7 +22,7 @@ static int Asin_reshape(Node * n)
 	return onnx_tensor_reshape_identity(y, x, x->type);
 }
 
-static void Asin_float16(Node * n)
+static void Cosh_float16(Node * n)
 {
 	Tensor * x = n->inputs[0];
 	Tensor * y = n->outputs[0];
@@ -32,11 +33,11 @@ static void Asin_float16(Node * n)
 	for(size_t i = 0, l = y->ndata; i < l; i++)
 	{
 		v = float16_to_float32(px[i]);
-		py[i] = float32_to_float16(asinf(v));
+		py[i] = float32_to_float16(coshf(v));
 	}
 }
 
-static void Asin_float32(Node * n)
+static void Cosh_float32(Node * n)
 {
 	Tensor * x = n->inputs[0];
 	Tensor * y = n->outputs[0];
@@ -44,10 +45,10 @@ static void Asin_float32(Node * n)
 	float * py = (float *)y->datas;
 
 	for(size_t i = 0, l = y->ndata; i < l; i++)
-		py[i] = asinf(px[i]);
+		py[i] = coshf(px[i]);
 }
 
-static void Asin_float64(Node * n)
+static void Cosh_float64(Node * n)
 {
 	Tensor * x = n->inputs[0];
 	Tensor * y = n->outputs[0];
@@ -55,36 +56,37 @@ static void Asin_float64(Node * n)
 	double * py = (double *)y->datas;
 
 	for(size_t i = 0, l = y->ndata; i < l; i++)
-		py[i] = asin(px[i]);
+		py[i] = cosh(px[i]);
 }
 
-void resolver_default_op_Asin(Node * n)
+void resolver_default_op_Cosh(Node * n)
 {
-	if(n->opset >= 7)
+	if(n->opset >= 9)
 	{
 		switch(n->inputs[0]->type)
 		{
 		case TENSOR_TYPE_FLOAT16:
-			n->init = Asin_init;
-			n->exit = Asin_exit;
-			n->reshape = Asin_reshape;
-			n->op = Asin_float16;
+			n->init = Cosh_init;
+			n->exit = Cosh_exit;
+			n->reshape = Cosh_reshape;
+			n->op = Cosh_float16;
 			break;
 		case TENSOR_TYPE_FLOAT32:
-			n->init = Asin_init;
-			n->exit = Asin_exit;
-			n->reshape = Asin_reshape;
-			n->op = Asin_float32;
+			n->init = Cosh_init;
+			n->exit = Cosh_exit;
+			n->reshape = Cosh_reshape;
+			n->op = Cosh_float32;
 			break;
 		case TENSOR_TYPE_FLOAT64:
-			n->init = Asin_init;
-			n->exit = Asin_exit;
-			n->reshape = Asin_reshape;
-			n->op = Asin_float64;
+			n->init = Cosh_init;
+			n->exit = Cosh_exit;
+			n->reshape = Cosh_reshape;
+			n->op = Cosh_float64;
 			break;
 		default:
 			break;
 		}
 	}
 }
+
 #endif

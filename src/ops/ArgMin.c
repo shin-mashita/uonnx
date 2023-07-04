@@ -1,5 +1,6 @@
 #include "uonnx.h"
 
+#ifdef UONNX_OPS_ARGMIN
 struct operator_pdata_t {
 	int axis;
 	int keepdims;
@@ -964,3 +965,4 @@ void resolver_default_op_ArgMin(Node * n)
 		}
 	}
 }
+#endif

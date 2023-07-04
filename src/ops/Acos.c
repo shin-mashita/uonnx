@@ -1,5 +1,6 @@
 #include "uonnx.h"
 
+#ifdef UONNX_OPS_ACOS
 static int Acos_init(Node * n)
 {
 	if((n->ninputs == 1) && (n->noutputs == 1))
@@ -86,3 +87,4 @@ void resolver_default_op_Acos(Node * n)
 		}
 	}
 }
+#endif

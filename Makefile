@@ -80,6 +80,7 @@ ifeq (mnist, $(filter mnist,$(MAKECMDGOALS)))
 	@make run APP=examples/benchmarks/cpu/mnist
 	@echo [MK] Running mnist benchmark on CPU...
 	@./build/examples/benchmarks/cpu/mnist.out
+	@make clean
 else ifeq (kws, $(filter kws,$(MAKECMDGOALS)))
 	@clear
 	@echo [MK] Compiling kws benchmark...

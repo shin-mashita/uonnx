@@ -1,5 +1,6 @@
 #include "uonnx.h"
 
+#ifdef UONNX_OPS_ABS
 static int Abs_init(Node * n)
 {
 	if((n->ninputs == 1) && (n->noutputs == 1))
@@ -343,3 +344,5 @@ void resolver_default_op_Abs(Node * n)
 		}
 	}
 }
+
+#endif
