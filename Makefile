@@ -6,7 +6,7 @@ CFLAGS		:= -g3 -ggdb -Wall -O3
 LDFLAGS		:= -g
 
 
-APP			?= scratch
+APP			?= examples/benchmarks/cpu/mnist
 APPDIRS 	:= $(sort $(dir $(wildcard ./$(APP)/*/)))
 APPFILES	:= $(foreach dir, $(APPDIRS), $(wildcard $(dir)*.c))
 APPOBJS		:= $(foreach file, $(APPFILES:.c=.o), $(subst ./, ./build/, $(file)))
@@ -33,7 +33,7 @@ OBJS		:= $(COBJS) $(APPOBJS)
 MODEL		?= examples/benchmarks/cpu/mnist/mnist.onnx
 PLANNER		?= 
 
-.PHONY: all lib run benchmark run_with_lib clean test make_test test_scratch
+.PHONY: all lib run benchmark run_with_lib clean test make_test
 
 all: clean lib
 
@@ -122,17 +122,6 @@ run_with_lib: lib $(APPOBJS)
 clean:
 	@rm -rf $(BUILDDIR)
 	@python tools/preprocessor.py --restore
-
-# Run scratch example. Use this for future example.
-test_scratch: clean run
-	@echo -n Running $(APP).
-	@sleep 0.66
-	@echo -n .
-	@sleep 0.66
-	@echo -n .
-	@sleep 0.66
-	@echo
-	@$(BUILDDIR)/$(APP).out
 
 # Used for debugging
 make_test:

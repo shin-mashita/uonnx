@@ -1,3 +1,12 @@
+/**
+ * @file uonnx.c
+ * @author Cedric Encarnacion (dakarashin0@gmail.com)
+ * @brief 
+ * 
+ * @copyright Copyright (c) 2023
+ * 
+ */
+
 #include "uonnx.h"
 
 Context * uonnx_init(const void * model_buf, size_t model_len, const void * planner_buf, size_t planner_len)

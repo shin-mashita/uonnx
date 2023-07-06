@@ -1,3 +1,12 @@
+/**
+ * @file uonnx_loader.c
+ * @author Cedric Encarnacion (dakarashin0@gmail.com)
+ * @brief With reference from https://github.com/xboot/libonnx
+ * 
+ * @copyright Copyright (c) 2023
+ * 
+ */
+
 #include "uonnx_loader.h"
 
 ModelProto * load_model_buf(const void * buf, size_t len)

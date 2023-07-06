@@ -1,3 +1,13 @@
+"""
+preprocessor.py
+
+Cedric Encarnacion (dakarashin0@gmail.com)
+Steven Esguerra
+Daniel John Sapit
+
+Copyright (c) 2023
+"""
+
 import onnx
 import os
 import sys

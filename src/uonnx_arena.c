@@ -1,3 +1,12 @@
+/**
+ * @file uonnx_arena.c
+ * @author Cedric Encarnacion (dakarashin0@gmail.com)
+ * @brief 
+ * 
+ * @copyright Copyright (c) 2023
+ * 
+ */
+
 #include "uonnx_arena.h"
 
 TensorArena * arena_init(const int MAX_TENSORS, const size_t MAX_BYTES)

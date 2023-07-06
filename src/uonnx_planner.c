@@ -1,3 +1,12 @@
+/**
+ * @file uonnx_planner.c
+ * @author Cedric Encarnacion (dakarashin0@gmail.com)
+ * @brief 
+ * 
+ * @copyright Copyright (c) 2023
+ * 
+ */
+
 #include "uonnx_planner.h"
 
 PlannerProto * load_planner_buf(const void * buf, size_t len)

@@ -1,6 +1,13 @@
-#include "uonnx_allocator.h"
+/**
+ * @file uonnx_allocator.c
+ * @author Cedric Encarnacion (dakarashin0@gmail.com)
+ * @brief 
+ * 
+ * @copyright Copyright (c) 2023
+ * 
+ */
 
-// Tensor * tensor_alloc //withdatas for no arena application
+#include "uonnx_allocator.h"
 
 Tensor * tensor_alloc_nodatas(uint32_t tensor_id, TensorType type, int * dims, int ndim, uint8_t isInitializer)
 {

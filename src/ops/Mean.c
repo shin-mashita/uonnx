@@ -1,3 +1,8 @@
+/**
+ * Operator reference from https://github.com/xboot/libonnx
+ * 
+ */
+
 #include "uonnx.h"
 
 static int Mean_init(Node * n)

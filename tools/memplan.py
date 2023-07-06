@@ -1,3 +1,11 @@
+"""
+memplan.py
+
+Cedric Encarnacion (dakarashin0@gmail.com)
+
+Copyright (c) 2023
+"""
+
 import sys
 import os
 import onnx
